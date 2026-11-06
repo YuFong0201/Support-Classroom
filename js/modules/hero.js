@@ -53,7 +53,7 @@ async function loadFeaturedTool() {
       heroWindow.insertAdjacentHTML('afterbegin', mediaHtml);
 
       // 3. 更新顯示標題
-      heroText.textContent = `經典熱門工具：${featuredTool.title} ${featuredTool.version || ''}`;
+      heroText.textContent = `最近更新：${featuredTool.title} ${featuredTool.version || ''}`;
 
       // 4. 圖片/影片加載失敗防呆處理
       const mediaEl = document.getElementById('hero-reveal-media');
