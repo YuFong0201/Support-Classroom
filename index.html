@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奇老師的資源教室</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <!-- 全局與各區塊獨立 CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/bento.css">
+  <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+
+  <!-- 1. 頂部導覽列 -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html">
+         <span class="logo-prefix">奇老師的</span>
+         <span class="logo-rotator">
+            <span class="logo-word text-blue active">資源</span>
+            <span class="logo-word text-red">支援</span>
+          </span>
+          <span class="logo-suffix">教室</span>
+        </a>
+      </div>
+
+      <!-- 漢堡按鈕 (手機版) -->
+      <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="選單">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- 導覽連結 -->
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html" class="active">首頁</a></li>
+        <li><a href="changelog.html">更新日誌</a></li>
+        <li><a href="feedback.html">意見回饋</a></li>
+      </ul>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </header>
+
+  <!-- 2. Hero 熱門工具圖卡區域 -->
+  <main class="hero-wrapper">
+    <div class="hero-paper-grain"></div>
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge-tag">
+        <span class="badge-dot"></span> 最新工具
+      </div>
+
+      <!-- 大型熱門工具圖卡 (加上 id="hero-reveal-window"，由 hero.js 動態渲染內容與監聽點擊) -->
+      <div class="hero-reveal-window" id="hero-reveal-window" style="cursor: pointer;">
+        <img src="" alt="熱門教學工具預覽" class="hero-reveal-img" id="hero-reveal-img" />
+        <div class="hero-reveal-overlay">
+          <div class="reveal-text" id="hero-reveal-text">載入最新工具中...</div>
+        </div>
+      </div>
+
+      <!-- 探索更多工具按鈕 -->
+      <div class="hero-cta-group">
+        <button id="btn-explore" type="button" class="cta-btn-primary">探索更多工具 <i>↓</i></button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 3. 其他工具圖卡區域 -->
+  <section id="more-tools" class="bento-section" style="display: none;">
+    <div id="bento-container"></div>
+  </section>
+
+  <!-- 4. Modal 彈窗 -->
+  <div id="tool-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <button id="modal-close" type="button" class="modal-close-btn" aria-label="關閉彈窗">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 主腳本入口 -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

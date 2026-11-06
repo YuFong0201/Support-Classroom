@@ -1,0 +1,252 @@
+:root {
+  --primary-color: #111827;   /* 石墨黑 */
+  --accent-blue: #009FB7;     /* 輔助藍 */
+  --accent-red: #FE4A49;      /* 點綴紅 */
+  --bg-color: #FFFFFF;        /* 主背景白 */
+  --text-color: #111827;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* 修正通配符語法錯誤 (- 改為 *) */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* 導覽列（透光極簡白） */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); 
+  border-bottom: 1px solid rgba(17, 24, 39, 0.06);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+/* ==========================================================================
+   Logo 區塊與 Apple 風格文字輪換樣式
+   ========================================================================== */
+/* 1. 父容器採用 inline-flex 並置中 */
+.logo a {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #111827;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.logo-prefix,
+.logo-suffix {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* 2. 滾動文字容器 */
+.logo-rotator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.35em;
+  width: 2.0em; 
+  overflow: hidden;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+
+/* 3. 輪換單字定位 */
+.logo-word {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-weight: 900;
+  line-height: 1;
+  margin: 0;
+  padding: 0 2px;
+  box-sizing: border-box;
+  
+  /* 預設隱藏在正下方 */
+  opacity: 0;
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+}
+
+/* 當前顯示狀態 (置中對齊) */
+.logo-word.active {
+  opacity: 1;
+  transform: translateY(0%);
+}
+
+/* 向上離場狀態 */
+.logo-word.leave {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+/* 配色 */
+.logo-word.text-blue {
+  color: var(--accent-blue); /* #009FB7 湖水藍 */
+}
+
+.logo-word.text-red {
+  color: var(--accent-red);  /* #FE4A49 珊瑚紅 */
+}
+
+/* ==========================================================================
+   導覽選單樣式
+   ========================================================================== */
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #4B5563;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #009FB7; /* 游標移入切換為藍色 */
+  background-color: rgba(0, 159, 183, 0.06);
+}
+
+.nav-links a.active {
+  color: #ffffff;
+  background-color: #111827; /* 當前頁面活躍狀態為石墨黑 */
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   RWD 漢堡選單樣式 (768px 以下啟用)
+   ========================================================================== */
+
+/* 預設隱藏漢堡按鈕與遮罩 */
+.hamburger-btn, .nav-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* 顯示漢堡按鈕 */
+  .hamburger-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 102;
+  }
+
+  .hamburger-btn span {
+    width: 100%;
+    height: 2.5px;
+    background-color: #111827;
+    border-radius: 4px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* 漢堡按鈕轉化為 X 關閉動畫 */
+  .hamburger-btn.active span:nth-child(1) {
+    transform: translateY(8.5px) rotate(45deg);
+  }
+
+  .hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-btn.active span:nth-child(3) {
+    transform: translateY(-8.5px) rotate(-45deg);
+  }
+
+  /* 導覽選單改為側邊/頂部滑出面板 */
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%; /* 預設推至螢幕外 */
+    width: 260px;
+    height: 100vh;
+    background-color: #ffffff;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 5rem 2rem 2rem 2rem;
+    gap: 1.25rem;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 101;
+  }
+
+  .nav-links.active {
+    right: 0; /* 展開選單 */
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1.05rem;
+  }
+
+  /* 暗色背板遮罩 */
+  .nav-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(17, 24, 39, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  .nav-overlay.active {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

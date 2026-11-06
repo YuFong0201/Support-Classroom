@@ -1,0 +1,225 @@
+/* ==========================================================================
+   Modal 工具預覽彈窗專用樣式
+   ========================================================================== */
+
+.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  background-color: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999999 !important;
+
+  display: none; /* 由 JS 切換為 flex */
+  justify-content: center;
+  align-items: center;
+
+  padding: 1.25rem;
+  box-sizing: border-box;
+
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* 顯示狀態 (.active) */
+.modal-overlay.active {
+  opacity: 1;
+}
+
+/* 彈窗主體 (相容 .modal-content 與 .modal-card) */
+.modal-content,
+.modal-card {
+  position: relative;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 620px;
+  max-height: 85vh;
+  max-height: 85dvh;
+  border-radius: 24px;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  transform: translateY(15px) scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.active .modal-content,
+.modal-overlay.active .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+/* 關閉按鈕（符合電子白板 48px+ 觸控邊界規範） */
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 48px;
+  height: 48px;
+  background: rgba(17, 24, 39, 0.6);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  background: #111827;
+  transform: scale(1.05);
+}
+
+/* 影音預覽區塊 */
+.modal-preview {
+  width: 100%;
+  height: 220px;
+  background-color: #000000;
+  position: relative;
+  overflow: hidden;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+
+.modal-preview img,
+.modal-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 內容文字區塊 */
+.modal-body-content {
+  padding: 1.5rem 1.75rem 2rem 1.75rem;
+}
+
+.modal-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.modal-version-tag {
+  font-size: 0.85rem;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.modal-title {
+  margin: 0.25rem 0 0.75rem 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.modal-platforms {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.modal-platform-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #009FB7;
+  background: rgba(0, 159, 183, 0.08);
+  padding: 4px 10px;
+  border-radius: 50px;
+}
+
+.modal-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4B5563;
+  margin-bottom: 1.5rem;
+}
+
+.modal-features {
+  margin-bottom: 1.75rem;
+}
+
+.modal-features h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.modal-features ul {
+  padding-left: 1.25rem;
+  color: #4B5563;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* 操作按鈕 (對齊品牌色彩系統) */
+.modal-action-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  text-align: center;
+  background-color: #111827;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.modal-action-btn:hover:not(.disabled) {
+  background-color: #009FB7;
+  transform: translateY(-2px);
+}
+
+.modal-action-btn.disabled {
+  background-color: #9CA3AF;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .modal-content,
+  .modal-card {
+    border-radius: 20px;
+  }
+
+  .modal-preview {
+    height: 170px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+
+  .modal-body-content {
+    padding: 1.25rem 1.25rem 1.5rem 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.35rem;
+  }
+
+  .modal-close-btn {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 44px;
+    height: 44px;
+  }
+}

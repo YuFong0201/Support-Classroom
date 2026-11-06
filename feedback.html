@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>意見回饋 - 奇老師的資源教室</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/feedback.css">
+</head>
+<body>
+
+<!-- 上方導覽列 -->
+<header>
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html">
+         <span class="logo-prefix">奇老師的</span>
+         <span class="logo-rotator">
+            <span class="logo-word text-blue active">資源</span>
+            <span class="logo-word text-red">支援</span>
+          </span>
+          <span class="logo-suffix">教室</span>
+        </a>
+      </div>
+
+      <!-- 漢堡按鈕 (手機版顯示) -->
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="選單">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- 導覽連結 (意見回饋為 active) -->
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">首頁</a></li>
+        <li><a href="changelog.html">更新日誌</a></li>
+        <li><a href="feedback.html" class="active">意見回饋</a></li>
+      </ul>
+    </nav>
+    <!-- 手機版選單開啟時的背景遮罩 -->
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </header>
+
+  <!-- 主內容區塊 -->
+  <main class="feedback-container">
+    <div class="feedback-card">
+      <h1 class="page-title">意見回饋與新功能許願</h1>
+      <p class="page-subtitle">有想要使用的教學工具？或是發現既有工具有使用上的問題？歡迎填寫下表，我會儘快處理與回覆！</p>
+
+      <form id="feedback-form" class="feedback-form">
+        <!-- 類別選擇 -->
+        <div class="form-group">
+          <label>回饋類別 <span class="required">*</span></label>
+          <div class="category-options">
+            <div class="category-option">
+              <input type="radio" id="cat-wish" name="category" value="新工具許願" checked>
+              <label for="cat-wish">💡 新工具許願</label>
+            </div>
+            <div class="category-option">
+              <input type="radio" id="cat-bug" name="category" value="Bug回報">
+              <label for="cat-bug">🐞 Bug 回報</label>
+            </div>
+            <div class="category-option">
+              <input type="radio" id="cat-other" name="category" value="其他建議">
+              <label for="cat-other">💬 其他建議</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 姓名與 Email (可選填，支援匿名) -->
+        <div class="form-group">
+          <label for="user-name">您的稱呼 (可匿名)</label>
+          <input type="text" id="user-name" name="name" class="form-control" placeholder="例如：王老師 / 匿名">
+        </div>
+
+        <div class="form-group">
+          <label for="user-email">您的 Email (便於向您確認詳細內容或狀況，非必填)</label>
+          <input type="email" id="user-email" name="email" class="form-control" placeholder="example@gmail.com">
+        </div>
+
+        <!-- 內容細節 -->
+        <div class="form-group">
+          <label for="feedback-content">回饋或建議內容 <span class="required">*</span></label>
+          <textarea id="feedback-content" name="message" class="form-control" required placeholder="請詳細描述您的想法、教學需求，或是遇到的錯誤狀況..."></textarea>
+        </div>
+
+        <button type="submit" id="submit-btn" class="submit-btn">送出意見回饋</button>
+        <div id="response-message" class="response-message"></div>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
