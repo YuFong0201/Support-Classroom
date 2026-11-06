@@ -165,6 +165,19 @@ header {
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .logo {
+    min-width: 0;
+  }
+
+  .logo a {
+    font-size: clamp(1rem, 4.5vw, 1.3rem);
+  }
+
   /* 顯示漢堡按鈕 */
   .hamburger-btn {
     display: flex;
@@ -177,6 +190,7 @@ header {
     cursor: pointer;
     padding: 0;
     z-index: 102;
+    flex-shrink: 0;
   }
 
   .hamburger-btn span {
@@ -204,21 +218,30 @@ header {
   .nav-links {
     position: fixed;
     top: 0;
-    right: -100%; /* 預設推至螢幕外 */
-    width: 260px;
+    right: 0;
+    width: min(280px, 85vw);
     height: 100vh;
+    height: 100dvh;
     background-color: #ffffff;
     flex-direction: column;
     justify-content: flex-start;
     padding: 5rem 2rem 2rem 2rem;
     gap: 1.25rem;
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
     z-index: 101;
   }
 
   .nav-links.active {
-    right: 0; /* 展開選單 */
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay: 0s;
   }
 
   .nav-links li {

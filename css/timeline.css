@@ -183,3 +183,44 @@
   font-size: 0.9rem;
   line-height: 1.6;
 }
+
+@media (max-width: 640px) {
+  .changelog-container {
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+
+  .page-title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    line-height: 1.25;
+  }
+
+  .section-title {
+    font-size: clamp(1.1rem, 4.5vw, 1.35rem);
+    line-height: 1.4;
+  }
+
+  .announcement-card,
+  .timeline-tool-group {
+    padding: 1rem;
+  }
+
+  .announcement-header {
+    flex-wrap: wrap;
+  }
+
+  .timeline-header {
+    gap: 0.5rem;
+    padding: 10px;
+  }
+
+  .version-info {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .toggle-icon {
+    flex-shrink: 0;
+  }
+}

@@ -223,8 +223,7 @@
   }
 
   .hero-reveal-window {
-    /* 手機版適度將高度切換至 45vh (最小 260px)，防止全螢幕把底部的探索按鈕推擠出視窗 */
-    height: clamp(260px, 45vh, 380px);
+    height: clamp(200px, 62vw, 380px);
     border-radius: 20px;
     margin-bottom: 1.25rem;
   }
@@ -236,5 +235,9 @@
   .cta-btn-primary {
     padding: 14px 28px;
     font-size: 0.95rem;
+  }
+
+  .reveal-text {
+    font-size: clamp(1rem, 4.5vw, 1.4rem);
   }
 }
