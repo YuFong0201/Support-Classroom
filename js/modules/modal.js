@@ -51,15 +51,13 @@ export function openModal(tool) {
     document.body.appendChild(modal);
   }
 
-  // 判斷按鈕狀態
-  let buttonHtml = `<a href="${tool.url || '#'}" target="_blank" class="modal-action-btn">立即開啟使用工具 ➔</a>`;
+  let buttonHtml = `<a href="${tool.url || '#'}" target="_blank" class="modal-action-btn">立即開啟工具 ➔</a>`;
   if (tool.status === 'maintenance') {
     buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">系統維護中暫停使用</button>`;
   } else if (tool.status === 'coming_soon') {
-    buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">工具開發中 即將推出</button>`;
+    buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">工具開發中，即將推出</button>`;
   }
 
-  // 動態填入內容 (避免與 HTML 關閉按鈕結構衝突)
   modalBody.innerHTML = `
     ${tool.preview ? `
       <div class="modal-preview">
@@ -93,7 +91,6 @@ export function openModal(tool) {
     </div>
   `;
 
-  // 顯示彈窗並觸發動畫
   modal.style.display = 'flex';
 
   requestAnimationFrame(() => {

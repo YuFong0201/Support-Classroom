@@ -151,7 +151,7 @@
         <!-- Subtitle / Tagline -->
         <div id="splash-tagline" style="position: absolute; bottom: 2rem; text-align: center; opacity: 0; transform: translateY(12px); pointer-events: none; white-space: nowrap;">
           <p style="font-size: 0.875rem; font-weight: 500; letter-spacing: 0.25em; color: rgba(207, 250, 254, 0.9); margin: 0;">
-            賦能教育 <span style="color: #f87171; font-weight: 700; margin: 0 0.25rem;">‧</span> 共創未來
+            資源共享 <span style="color: #f87171; font-weight: 700; margin: 0 0.25rem;">‧</span> 普特共融
           </p>
           <div style="margin-top: 0.375rem; width: 3rem; height: 2px; margin-left: auto; margin-right: auto; background: linear-gradient(to right, #009FB7, #FE4A49); border-radius: 9999px; opacity: 0.8;"></div>
         </div>

@@ -70,6 +70,6 @@ async function loadFeaturedTool() {
     }
   } catch (error) {
     console.error('無法載入 Hero 熱門工具資料：', error);
-    heroText.textContent = '經典熱門工具：國小數學無限題庫 V1.0';
+    heroText.textContent = '最近更新：國小數學無限題庫 V1.0.0';
   }
 }

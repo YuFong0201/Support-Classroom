@@ -12,8 +12,8 @@ export async function renderBentoGrid() {
     // 1. 組合「標題區塊」與「卡片網格容器」
     const headerHtml = `
       <div class="section-title-wrapper">
-        <h2 class="section-title">全系列教學工具箱</h2>
-        <p class="section-subtitle">點擊任意圖卡查看工具細節與使用說明</p>
+        <h2 class="section-title">全系列教學工具</h2>
+        <p class="section-subtitle">點擊圖卡查看工具細節與使用說明</p>
       </div>
     `;
 
