@@ -41,5 +41,27 @@
       "提供試卷印製及線上計分產生評量報告的功能",
       "評量報告可做為普通班教師是否向輔導室提出特教鑑定申請的參考資料"
     ]
+  },
+  
+  {
+    "id": "Time-system-for-teachers",
+    "title": "教室時間管理大師",
+    "featured": false,
+    "status": "active",
+    "version": "V1.0.0",
+    "updatedAt": "2026-11-09",
+    "description": "一個簡單的數位時鐘",
+    "platforms": ["電腦", "電子白板", "平板"],
+    "preview": {
+      "image": "assets/images/previews/Time-system-for-teachers.png",
+      "video": ""
+    },
+    "type": "external",
+    "url": "https://yufong0201.github.io/Time-system-for-teachers/",
+    "features": [
+      "主要適用於教室的電子白板，包含簡單的時間顯示、正倒數計時器、番茄時鐘、整日考程時鐘等功能",
+      "可用於早自修、小組討論、自修、閱讀時間、段考等多種情境",
+      "極簡的視覺設計避免造成學生分心"
+    ]
   }
 ]
