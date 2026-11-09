@@ -77,6 +77,19 @@
           ]          
         }
       ]
+    },
+    {
+      "toolId":"Time-system-for-teachers",
+      "toolName":"教室時間管理大師",
+      "logs":[
+        {
+          "version":"V1.0.0",
+          "date":"2026-11-09",
+          "details":[
+            "測試完畢正式上線"
+          ]
+        }
+      ]
     }
   ]
 }
