@@ -6,11 +6,11 @@
   --text-color: #111827;
 }
 
+/* 改為 auto，避免原生 smooth 與 Lenis 平滑滾動互相衝突導致滾輪延遲跳頁 */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
-/* 修正通配符語法錯誤 (- 改為 *) */
 * {
   box-sizing: border-box;
 }
@@ -20,9 +20,26 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 導覽列（透光極簡白） */
+/* 開場動畫期間防閃爍控制 */
+html.is-splashing {
+  background-color: #0B132B;
+  overflow: hidden;
+}
+
+html.is-splashing header,
+html.is-splashing .bento-section,
+html.is-splashing .site-footer {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+}
+
+/* 導覽列（透光極簡白，支援 Splash 結束後的優雅進場過渡） */
 header {
   position: sticky;
   top: 0;
@@ -31,13 +48,19 @@ header {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px); 
   border-bottom: 1px solid rgba(17, 24, 39, 0.06);
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0s linear 0s;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1380px; /* 與下方 Hero 大圖卡、Bento 網格、頁尾左右完全切齊 */
   margin: 0 auto;
   padding: 1rem 1.5rem;
 }
@@ -45,16 +68,34 @@ header {
 /* ==========================================================================
    Logo 區塊與 Apple 風格文字輪換樣式
    ========================================================================== */
-/* 1. 父容器採用 inline-flex 並置中 */
 .logo a {
   display: inline-flex;
   align-items: center;
+  gap: 10px;
   font-size: 1.3rem;
   font-weight: 800;
   color: #111827;
   text-decoration: none;
   letter-spacing: -0.5px;
   line-height: 1;
+}
+
+.logo-img {
+  height: 32px;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 6px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logo a:hover .logo-img {
+  transform: scale(1.08);
+}
+
+.logo-text-group {
+  display: inline-flex;
+  align-items: center;
 }
 
 .logo-prefix,
@@ -65,7 +106,6 @@ header {
   line-height: 1;
 }
 
-/* 2. 滾動文字容器 */
 .logo-rotator {
   position: relative;
   display: inline-flex;
@@ -78,7 +118,6 @@ header {
   vertical-align: middle;
 }
 
-/* 3. 輪換單字定位 */
 .logo-word {
   position: absolute;
   top: 0;
@@ -94,38 +133,32 @@ header {
   margin: 0;
   padding: 0 2px;
   box-sizing: border-box;
-  
-  /* 預設隱藏在正下方 */
   opacity: 0;
   transform: translateY(100%);
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
 }
 
-/* 當前顯示狀態 (置中對齊) */
 .logo-word.active {
   opacity: 1;
   transform: translateY(0%);
 }
 
-/* 向上離場狀態 */
 .logo-word.leave {
   opacity: 0;
   transform: translateY(-100%);
 }
 
-/* 配色 */
 .logo-word.text-blue {
-  color: var(--accent-blue); /* #009FB7 湖水藍 */
+  color: var(--accent-blue);
 }
 
 .logo-word.text-red {
-  color: var(--accent-red);  /* #FE4A49 珊瑚紅 */
+  color: var(--accent-red);
 }
 
 /* ==========================================================================
    導覽選單樣式
    ========================================================================== */
-
 .nav-links {
   display: flex;
   list-style: none;
@@ -145,21 +178,19 @@ header {
 }
 
 .nav-links a:hover {
-  color: #009FB7; /* 游標移入切換為藍色 */
+  color: #009FB7;
   background-color: rgba(0, 159, 183, 0.06);
 }
 
 .nav-links a.active {
   color: #ffffff;
-  background-color: #111827; /* 當前頁面活躍狀態為石墨黑 */
+  background-color: #111827;
   font-weight: 700;
 }
 
 /* ==========================================================================
    RWD 漢堡選單樣式 (768px 以下啟用)
    ========================================================================== */
-
-/* 預設隱藏漢堡按鈕與遮罩 */
 .hamburger-btn, .nav-overlay {
   display: none;
 }
@@ -175,10 +206,14 @@ header {
   }
 
   .logo a {
-    font-size: clamp(1rem, 4.5vw, 1.3rem);
+    gap: 8px;
+    font-size: clamp(0.95rem, 4.2vw, 1.3rem);
   }
 
-  /* 顯示漢堡按鈕 */
+  .logo-img {
+    height: 26px;
+  }
+
   .hamburger-btn {
     display: flex;
     flex-direction: column;
@@ -201,7 +236,6 @@ header {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* 漢堡按鈕轉化為 X 關閉動畫 */
   .hamburger-btn.active span:nth-child(1) {
     transform: translateY(8.5px) rotate(45deg);
   }
@@ -214,7 +248,6 @@ header {
     transform: translateY(-8.5px) rotate(-45deg);
   }
 
-  /* 導覽選單改為側邊/頂部滑出面板 */
   .nav-links {
     position: fixed;
     top: 0;
@@ -255,7 +288,6 @@ header {
     font-size: 1.05rem;
   }
 
-  /* 暗色背板遮罩 */
   .nav-overlay {
     position: fixed;
     inset: 0;
@@ -271,5 +303,194 @@ header {
     display: block;
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+/* ==========================================================================
+   網站通用頁尾 (Footer) 樣式
+   ========================================================================== */
+.site-footer {
+  width: 100%;
+  background-color: #F9FAFB;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+  padding: 2rem 1.5rem;
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-about-btn {
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(17, 24, 39, 0.15);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.footer-about-btn:hover {
+  color: #FFFFFF;
+  background-color: #111827;
+  border-color: #111827;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 1.75rem 1rem;
+  }
+
+  .footer-container {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: 0.875rem;
+  }
+}
+#page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: #FFFFFF;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#page-transition-overlay.is-loaded {
+  opacity: 0;
+}
+
+#page-transition-overlay.is-leaving {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 0.26s;
+}
+
+/* 首頁初次播放 Splash 開場動畫時，隱藏白底轉場遮罩以免衝突 */
+html.is-splashing #page-transition-overlay {
+  display: none;
+}
+
+.scroll-progress-btn {
+  position: fixed;
+  right: 1.75rem;
+  bottom: 1.75rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px -5px rgba(17, 24, 39, 0.14),
+              0 2px 8px rgba(17, 24, 39, 0.06);
+
+  /* 預設隱藏，向下滑動後浮現 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(0.9);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s ease,
+              visibility 0s linear 0.35s;
+}
+
+.scroll-progress-btn.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  transition-delay: 0s;
+}
+
+.scroll-progress-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 14px 30px -5px rgba(0, 159, 183, 0.22),
+              0 4px 10px rgba(17, 24, 39, 0.08);
+}
+
+.scroll-progress-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+/* 當 Modal 彈窗開啟或 Splash 播放期間隱藏 */
+body.modal-open .scroll-progress-btn,
+html.is-splashing .scroll-progress-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.progress-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* 從 12 點鐘方向開始順時針繪製進度 */
+}
+
+.progress-ring-track {
+  fill: none;
+  stroke: rgba(17, 24, 39, 0.08);
+  stroke-width: 3;
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke: url(#brandProgressGrad);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.08s linear;
+}
+
+.progress-ring-arrow {
+  position: relative;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  color: #111827;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+.scroll-progress-btn:hover .progress-ring-arrow {
+  color: #009FB7;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .scroll-progress-btn {
+    right: 1.15rem;
+    bottom: 1.25rem;
+    width: 48px;
+    height: 48px;
   }
 }

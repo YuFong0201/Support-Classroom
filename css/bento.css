@@ -1,25 +1,15 @@
 /* ==========================================================================
-   Bento Grid 卡片區塊 (相容 VanillaTilt 與 JSON 縮圖影片)
-   專職負責網格排版與卡片 Hover 動態，不包含任何 Modal 樣式
+   Bento Grid 卡片區塊 (最多 2 欄並排 + 游標聚光燈光暈邊框 Spotlight Glow)
    ========================================================================== */
 
 .bento-section {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 4rem 1.5rem 6rem 1.5rem;
+  padding: 3rem 1.5rem 6rem 1.5rem;
+  box-sizing: border-box;
   scroll-margin-top: 5rem;
-  animation: fadeIn 0.5s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  overflow-x: clip;
 }
 
 .section-title-wrapper {
@@ -31,36 +21,92 @@
   font-size: 2rem;
   font-weight: 800;
   color: #111827;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem 0;
 }
 
 .section-subtitle {
   font-size: 1rem;
   color: #6B7280;
+  margin: 0;
 }
 
+/* 最多 2 欄並排網格 */
 .bento-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.75rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
 }
 
 .bento-card {
   position: relative;
   background: #ffffff;
   border: 1px solid #E5E7EB;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
+  /* 游標聚光燈座標預設值 */
+  --mouse-x: -999px;
+  --mouse-y: -999px;
+  --spotlight-opacity: 0;
+}
+
+/* 1. 游標聚光燈發光邊框層 (透過 CSS Mask 精準鏤空出 2px 品牌雙色光暈邊框) */
+.bento-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* 發光邊框粗細 */
+  background: radial-gradient(
+    420px circle at var(--mouse-x) var(--mouse-y),
+    rgba(0, 159, 183, 0.95) 0%,
+    rgb(122, 206, 255) 45%,
+    transparent 80%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--spotlight-opacity);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* 2. 游標聚光燈卡片內部柔和光澤層 */
+.bento-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    550px circle at var(--mouse-x) var(--mouse-y),
+    rgba(0, 159, 183, 0.07) 0%,
+    rgba(141, 204, 255, 0.03) 45%,
+    transparent 80%
+  );
+  opacity: var(--spotlight-opacity);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 3;
 }
 
 .bento-card:hover {
-  border-color: #009FB7;
-  box-shadow: 0 12px 24px -4px rgba(0, 159, 183, 0.15);
+  border-color: rgba(0, 159, 183, 0.35);
+  box-shadow: 0 18px 34px -6px rgba(0, 159, 183, 0.16);
+}
+
+/* WOW.js + Anime.js 滾動側滑進場初始狀態 */
+.bento-card.wow-anime-card {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.bento-card.wow-anime-card.is-animated {
+  will-change: auto;
 }
 
 /* 狀態控制：維護中 / 即將推出 */
@@ -73,14 +119,14 @@
 /* 維護 / 即將推出 Badge 標籤 */
 .card-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
   z-index: 10;
   background: rgba(17, 24, 39, 0.85);
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 50px;
   backdrop-filter: blur(4px);
 }
@@ -94,13 +140,13 @@
 }
 
 /* ==========================================================================
-   Bento Grid 縮圖與 Hover 影片淡入切換 (修正版)
+   Bento Grid 縮圖與 Hover 影片淡入切換
    ========================================================================== */
 
 .preview-wrapper {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: clamp(220px, 24vw, 320px);
   overflow: hidden;
   background: #F3F4F6;
 }
@@ -109,10 +155,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 影片預設隱藏 (透明度 0 + 禁止點擊穿透) */
 .preview-video {
   position: absolute;
   top: 0;
@@ -120,62 +165,77 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0; /* 平時透明隱藏，露出底下的圖片 */
+  opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
 
-/* 卡片 Hover 效果：圖片放大 + 影片淡入顯現 */
 .bento-card:hover .preview-img {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
 .bento-card:hover .preview-video {
-  opacity: 1; /* 滑鼠移入時，影片淡入顯示 */
+  opacity: 1;
 }
 
 .card-content {
-  padding: 1.25rem 1.5rem;
+  position: relative;
+  z-index: 2;
+  padding: 1.5rem 1.75rem;
 }
 
 .platform-icons {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
 }
 
 .platform-icons span,
 .platform-icons i {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: #009FB7;
   background: rgba(0, 159, 183, 0.08);
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
 }
 
 .card-title {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.35rem;
+  font-weight: 800;
   color: #111827;
   margin: 0;
 }
 
+/* ==========================================================================
+   響應式斷點 (平板與手機)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .bento-grid {
+    gap: 1.25rem;
+  }
+
+  .card-content {
+    padding: 1.25rem 1.35rem;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+  }
+}
+
 @media (max-width: 768px) {
   .bento-section {
-    padding: 3rem 1rem 4rem;
+    padding: 2.5rem 1rem 4rem 1rem;
   }
 
   .bento-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.25rem;
   }
 
   .preview-wrapper {
-    height: clamp(160px, 55vw, 240px);
-  }
-
-  .card-content {
-    padding: 1rem 1.125rem;
+    height: clamp(180px, 54vw, 260px);
   }
 }

@@ -1,6 +1,22 @@
-/* ==========================================================================
-   Modal 工具預覽彈窗專用樣式
-   ========================================================================== */
+/* 背景頁面元素景深過渡準備 */
+body > header,
+body > main,
+body > section,
+body > footer {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center top;
+}
+
+/* 當 Modal 彈窗開啟時，背景主畫面優雅向後景深縮放 */
+body.modal-open > header,
+body.modal-open > main,
+body.modal-open > section,
+body.modal-open > footer {
+  transform: scale(0.972);
+  filter: blur(2.5px) brightness(0.96);
+  pointer-events: none;
+}
 
 .modal-overlay {
   position: fixed !important;
@@ -8,7 +24,7 @@
   width: 100vw !important;
   height: 100vh !important;
   height: 100dvh !important;
-  background-color: rgba(17, 24, 39, 0.75);
+  background-color: rgba(17, 24, 39, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 999999 !important;
@@ -21,7 +37,7 @@
   box-sizing: border-box;
 
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 /* 顯示狀態 (.active) */
@@ -29,7 +45,7 @@
   opacity: 1;
 }
 
-/* 彈窗主體 (相容 .modal-content 與 .modal-card) */
+/* 彈窗主體 (純淨極簡白底，無流光邊框) */
 .modal-content,
 .modal-card {
   position: relative;
@@ -40,12 +56,12 @@
   max-height: 85dvh;
   border-radius: 24px;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(17, 24, 39, 0.06);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  transform: translateY(15px) scale(0.96);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(18px) scale(0.95);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-overlay.active .modal-content,

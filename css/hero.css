@@ -1,22 +1,16 @@
-/* ==========================================================================
-   高級質感沉浸式 Hero Showcase 樣式 (極簡黑白灰 + 藍紅精緻點綴)
-   已整合：全載體響應式放大滿版、動畫影片適配與開場防閃爍機制
-   ========================================================================== */
-
-/* 1. 沉浸式 Hero 外層容器 (整合全螢幕響應式) */
+/* 1. 沉浸式 Hero 外層容器 */
 .hero-wrapper {
   position: relative;
   width: 100%;
-  /* 彈性最小高度：大螢幕適度撐滿視埠（扣除導覽列），同時讓手機不被強迫拉過長 */
   min-height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #FFFFFF; /* 純白基底 */
-  color: #111827;           /* 石墨黑文字 */
+  background-color: #FFFFFF;
+  color: #111827;
   overflow: hidden;
-  padding: 2rem 1.5rem 3rem 1.5rem;
+  padding: 2rem 1.5rem 2rem 1.5rem;
   box-sizing: border-box;
   
   /* 開場防閃爍控制 */
@@ -38,7 +32,7 @@
   height: 100%;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.03; /* 極隱約紙張顆粒質感 */
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
@@ -73,7 +67,7 @@
   100% { transform: translate(-20px, 20px) scale(0.95); }
 }
 
-/* 4. 中央內容區域 (拓寬最大邊界至 1380px，提升大螢幕滿版感) */
+/* 4. 中央內容區域 (最大寬度 1380px，與下方 .bento-section 完全切齊) */
 .hero-content {
   position: relative;
   z-index: 5;
@@ -109,13 +103,12 @@
   box-shadow: 0 0 6px rgba(254, 74, 73, 0.6);
 }
 
-/* 5. 熱門工具卡片展示視窗 (大幅拉大視窗高度與寬度，支援動畫影片與圖像全滿填滿) */
+/* 5. 熱門工具卡片展示視窗 */
 .hero-reveal-window {
   position: relative;
   width: 100%;
-  /* 採用 clamp 響應式：最小 360px、標準比例為視埠 58vh、最大可達 680px */
-  height: clamp(360px, 58vh, 680px);
-  margin: 0 auto 1.75rem auto;
+  height: clamp(360px, 60vh, 680px);
+  margin: 0 auto;
   border-radius: 28px;
   overflow: hidden;
   border: 1px solid rgba(17, 24, 39, 0.08);
@@ -131,7 +124,6 @@
   box-shadow: 0 35px 60px -12px rgba(0, 159, 183, 0.25);
 }
 
-/* 影片與圖片統一做滿視窗 (object-fit: cover 確保全滿不失真) */
 .hero-reveal-img,
 .hero-reveal-window video {
   width: 100%;
@@ -163,7 +155,6 @@
 }
 
 .reveal-text {
-  /* 動態動態微調字體，在 4K 電子白板與桌機上均清晰醒目 */
   font-size: clamp(1.2rem, 2vw, 1.75rem);
   font-weight: 800;
   color: #ffffff;
@@ -171,73 +162,90 @@
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* 6. 按鈕區域 */
-.hero-cta-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 0.5rem;
-}
-
-/* 探索更多工具 (主膠囊按鈕) */
-.cta-btn-primary {
-  padding: 16px 36px;
-  background: #111827;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1.05rem;
-  border-radius: 50px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.25s ease;
-  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cta-btn-primary:hover {
-  background: #1f2937;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(254, 74, 73, 0.25);
-}
-
-.cta-btn-primary i {
-  font-style: normal;
-  transition: transform 0.25s ease;
-}
-
-.cta-btn-primary:hover i {
-  transform: translateY(3px); /* 游標移入時箭頭微向下動態效果 */
-}
-
-/* ==========================================================================
-   行動裝置 (Mobile / Tablet 響應式優化)
-   ========================================================================== */
-
 @media (max-width: 768px) {
   .hero-wrapper {
     min-height: auto;
-    padding: 1.5rem 1rem 2.5rem 1rem;
+    padding: 1.5rem 1rem 1.5rem 1rem;
   }
 
   .hero-reveal-window {
     height: clamp(200px, 62vw, 380px);
     border-radius: 20px;
-    margin-bottom: 1.25rem;
   }
 
   .hero-reveal-overlay {
     padding: 1.5rem 1rem 1.25rem 1rem;
   }
 
-  .cta-btn-primary {
-    padding: 14px 28px;
-    font-size: 0.95rem;
-  }
-
   .reveal-text {
     font-size: clamp(1rem, 4.5vw, 1.4rem);
+  }
+}
+
+.hero-content,
+.hero-reveal-window,
+.hero-glow-1,
+.hero-glow-2 {
+  will-change: transform, opacity;
+}
+
+.hero-scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1.5rem;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6B7280;
+  letter-spacing: 0.05em;
+  user-select: none;
+  cursor: pointer;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.hero-scroll-cue:hover {
+  color: #009FB7;
+  transform: translateY(2px);
+}
+
+.scroll-cue-mouse {
+  width: 18px;
+  height: 28px;
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.scroll-cue-wheel {
+  width: 3px;
+  height: 6px;
+  background-color: #FE4A49;
+  border-radius: 2px;
+  margin-top: 4px;
+  animation: scrollWheelBounce 1.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scrollWheelBounce {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0.2;
+    transform: translateY(9px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(11px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-scroll-cue {
+    margin-top: 1.1rem;
+    font-size: 0.8rem;
   }
 }

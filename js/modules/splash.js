@@ -1,18 +1,29 @@
 /**
  * Splash Screen Animation Module
  * 2.0s Orbital Swirl & Liquid Metaball Intro ("資源 ✕ 支援")
- * (已徹底解決開場白光與「支援」球體瞬閃問題)
+ * (已徹底解決導覽列與首頁內容提前閃出問題)
  */
 (function () {
   const heroWrapper = document.querySelector('.hero-wrapper');
 
+  // 解除整頁遮罩鎖定，讓導覽列、Hero 與下方工具區平滑顯現
+  function revealPage() {
+    document.documentElement.classList.remove('is-splashing');
+    if (heroWrapper) heroWrapper.classList.add('splash-ready');
+  }
+
   // 1. 檢查是否在當前 Session 中已經播放過
   if (sessionStorage.getItem('splashPlayed') === 'true') {
-    if (heroWrapper) heroWrapper.classList.add('splash-ready');
+    revealPage();
     return;
   }
 
   let mainTl = null;
+
+  // 安全防護網：萬一外部 CDN (GSAP) 載入過慢或失敗，最多 3.5 秒後強制解鎖頁面，避免卡死
+  const safetyTimer = setTimeout(() => {
+    finishAnimation();
+  }, 3500);
 
   // 2. 自動載入依賴套件 (FontAwesome & GSAP)
   function loadDependencies(callback) {
@@ -32,11 +43,12 @@
       const gsapScript = document.createElement('script');
       gsapScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
       gsapScript.onload = callback;
+      gsapScript.onerror = finishAnimation;
       document.head.appendChild(gsapScript);
     }
   }
 
-  // 3. 注入元件所需 CSS 樣式 (預先將球體設為 opacity: 0 避免瞬閃)
+  // 3. 注入元件所需 CSS 樣式
   function injectStyles() {
     if (document.getElementById('splash-styles')) return;
 
@@ -80,7 +92,6 @@
         left: 50%;
         margin-top: -3.5rem;
         margin-left: -3.5rem;
-        /* 防瞬閃關鍵：預設完全透明與縮小 */
         opacity: 0;
         transform: scale(0);
       }
@@ -100,7 +111,6 @@
   function createSplashDOM() {
     if (document.getElementById('splash-overlay')) return;
 
-    // SVG Gooey Filter
     const svgContainer = document.createElement('div');
     svgContainer.innerHTML = `
       <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
@@ -119,18 +129,13 @@
     `;
     document.body.appendChild(svgContainer);
 
-    // Splash Screen Overlay
     const overlay = document.createElement('div');
     overlay.id = 'splash-overlay';
     overlay.innerHTML = `
-      <!-- Background Radial Ripple -->
       <div id="burst-ring" style="position: absolute; width: 4rem; height: 4rem; border-radius: 9999px; border: 2px solid rgba(34, 211, 238, 0.5); opacity: 0; pointer-events: none; transform: translate(-50%, -50%); left: 50%; top: 50%;"></div>
       <div id="burst-bg" style="position: absolute; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: linear-gradient(to top right, #009FB7, #FE4A49); opacity: 0; pointer-events: none; transform: translate(-50%, -50%); left: 50%; top: 50%;"></div>
 
-      <!-- Orbit & Metaball Container -->
       <div id="orbit-center" style="position: relative; width: 20rem; height: 20rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        
-        <!-- Liquid Gooey Container -->
         <div class="gooey-container">
           <div id="ball-resource" class="splash-ball-base">
             <span style="user-select: none; display: inline-block;">資源</span>
@@ -140,22 +145,18 @@
           </div>
         </div>
 
-        <!-- Center Fusion Badge Symbol (✕) -->
         <div id="badge-multiply" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; font-size: 1.75rem; color: rgba(255, 255, 255, 0.9); opacity: 0; z-index: 10; pointer-events: none;">
           ✕
         </div>
 
-        <!-- Fusion Center Sparkle -->
         <div id="sparkle-core" style="position: absolute; top: 50%; left: 50%; width: 1rem; height: 1rem; margin-top: -0.5rem; margin-left: -0.5rem; border-radius: 9999px; background-color: #ffffff; opacity: 0; transform: scale(0); box-shadow: 0 0 20px #fff;"></div>
 
-        <!-- Subtitle / Tagline -->
         <div id="splash-tagline" style="position: absolute; bottom: 2rem; text-align: center; opacity: 0; transform: translateY(12px); pointer-events: none; white-space: nowrap;">
           <p style="font-size: 0.875rem; font-weight: 500; letter-spacing: 0.25em; color: rgba(207, 250, 254, 0.9); margin: 0;">
             資源共享 <span style="color: #f87171; font-weight: 700; margin: 0 0.25rem;">‧</span> 普特共融
           </p>
           <div style="margin-top: 0.375rem; width: 3rem; height: 2px; margin-left: auto; margin-right: auto; background: linear-gradient(to right, #009FB7, #FE4A49); border-radius: 9999px; opacity: 0.8;"></div>
         </div>
-
       </div>
     `;
     document.body.appendChild(overlay);
@@ -163,8 +164,10 @@
 
   // 5. 安全結束動畫並移除 DOM
   function finishAnimation() {
+    clearTimeout(safetyTimer);
     sessionStorage.setItem('splashPlayed', 'true');
-    if (heroWrapper) heroWrapper.classList.add('splash-ready');
+    revealPage();
+
     const splash = document.getElementById('splash-overlay');
     if (!splash) return;
 
@@ -186,7 +189,6 @@
 
     if (!splash) return;
 
-    // 重設初始位置與旋轉中心
     gsap.set(splash, { display: 'flex', opacity: 1 });
     gsap.set(orbitCenter, { rotation: 0, transformOrigin: "50% 50%" });
     gsap.set(badgeMultiply, { scale: 0, opacity: 0 });
@@ -195,12 +197,11 @@
     gsap.set(burstRing, { scale: 1, opacity: 0 });
     gsap.set(burstBg, { scale: 1, opacity: 0 });
 
-    // 建立 2.0s 主時間軸
     mainTl = gsap.timeline({
       onComplete: finishAnimation
     });
 
-    // PHASE 1: 0.0s - 0.4s 從兩側向中心對稱登場 (透明度由 0 轉至 1)
+    // PHASE 1: 0.0s - 0.4s
     mainTl.fromTo(ballResource, 
       { scale: 0, x: -160, opacity: 0 }, 
       { scale: 1, x: -90, opacity: 1, duration: 0.4, ease: "back.out(1.7)" }, 
@@ -213,7 +214,7 @@
       0.0
     );
 
-    // PHASE 2: 0.4s - 1.1s 圍繞正中心點 360 度旋轉與拉扯
+    // PHASE 2: 0.4s - 1.1s
     mainTl.to(orbitCenter, {
       rotation: 360,
       duration: 0.7,
@@ -258,7 +259,7 @@
       ease: "power1.out"
     }, 0.75);
 
-    // PHASE 3: 1.1s - 1.5s 碰撞閃光、✕ 標誌與標語登場
+    // PHASE 3: 1.1s - 1.5s
     mainTl.to(sparkleCore, {
       scale: 2.8,
       opacity: 0.9,
@@ -298,7 +299,11 @@
       ease: "power2.out"
     }, 1.15);
 
-    // PHASE 4: 1.6s - 2.0s 圓形擴散與平滑過渡進入首頁
+    // PHASE 4: 1.6s - 2.0s 圓形擴散與平滑過渡進入首頁（同步解鎖導覽列與頁面）
+    mainTl.add(() => {
+      revealPage();
+    }, 1.6);
+
     mainTl.to(burstRing, {
       opacity: 1,
       scale: 32,
@@ -314,8 +319,6 @@
       ease: "power3.inOut"
     }, 1.6);
 
-    if (heroWrapper) heroWrapper.classList.add('splash-ready');
-
     mainTl.to(splash, {
       opacity: 0,
       duration: 0.4,
@@ -323,7 +326,6 @@
     }, 1.6);
   }
 
-  // 初始化入口（立即注入樣式與 DOM）
   function init() {
     injectStyles();
     createSplashDOM();

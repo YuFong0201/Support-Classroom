@@ -7,25 +7,32 @@
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/timeline.css">
+  <link rel="stylesheet" href="css/modal.css">
+
+  <!-- 平滑滾動依賴套件 -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js" defer></script>
 </head>
 <body>
 
-<!-- 上方導覽列 -->
-<header>
+  <!-- 上方導覽列 -->
+  <header>
     <nav class="navbar">
       <div class="logo">
         <a href="index.html">
-         <span class="logo-prefix">奇老師的</span>
-         <span class="logo-rotator">
-            <span class="logo-word text-blue active">資源</span>
-            <span class="logo-word text-red">支援</span>
+          <img src="assets/images/logo.png" alt="奇老師的資源教室 Logo" class="logo-img">
+          <span class="logo-text-group">
+            <span class="logo-prefix">奇老師的</span>
+            <span class="logo-rotator">
+              <span class="logo-word text-blue active">資源</span>
+              <span class="logo-word text-red">支援</span>
+            </span>
+            <span class="logo-suffix">教室</span>
           </span>
-          <span class="logo-suffix">教室</span>
         </a>
       </div>
 
       <!-- 漢堡按鈕 (手機版顯示) -->
-      <button class="hamburger-btn" id="hamburger-btn" aria-label="選單">
+      <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="選單">
         <span></span>
         <span></span>
         <span></span>
@@ -54,6 +61,26 @@
     <h2 class="section-title">📜 各項工具更新歷史</h2>
     <section class="history-list" id="history-container"></section>
   </main>
+
+  <!-- 網站通用頁尾 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-copyright">
+        &copy; <span id="footer-year">2026</span> 奇老師的資源教室. All rights reserved.
+      </div>
+      <div class="footer-actions">
+        <button type="button" id="btn-about-me" class="footer-about-btn">關於本站</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 共用 Modal 彈窗 (供「關於我」使用) -->
+  <div id="tool-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <button id="modal-close" type="button" class="modal-close-btn" aria-label="關閉彈窗">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>

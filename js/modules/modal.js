@@ -1,5 +1,5 @@
 /**
- * Modal Module (彈窗控制模組)
+ * Modal Module (彈窗控制模組 - 支援背景景深縮放與統一開啟介面)
  */
 
 export function initModal() {
@@ -31,26 +31,38 @@ export function closeModal() {
   const modal = document.getElementById('tool-modal');
   if (!modal) return;
 
-  // 先移除動畫淡出
+  // 移除動畫與背景景深縮放狀態
   modal.classList.remove('active');
+  document.body.classList.remove('modal-open');
 
   // 等待淡出動畫完畢後隱藏元素
   setTimeout(() => {
     modal.style.display = 'none';
-  }, 200);
+  }, 240);
 }
 
-export function openModal(tool) {
+/**
+ * 通用自訂內容開啟函式（供「關於我」等非工具類彈窗共用景深特效）
+ */
+export function openCustomModal(htmlContent) {
   const modal = document.getElementById('tool-modal');
   const modalBody = document.getElementById('modal-body');
-
   if (!modal || !modalBody) return;
 
-  // 關鍵修復：將 Modal 強制移至 <body> 最外層，擺脫任何父容器 transform 造成的偏位或左下角掉落問題
   if (modal.parentElement !== document.body) {
     document.body.appendChild(modal);
   }
 
+  modalBody.innerHTML = htmlContent;
+  modal.style.display = 'flex';
+
+  requestAnimationFrame(() => {
+    modal.classList.add('active');
+    document.body.classList.add('modal-open');
+  });
+}
+
+export function openModal(tool) {
   let buttonHtml = `<a href="${tool.url || '#'}" target="_blank" class="modal-action-btn">立即開啟工具 ➔</a>`;
   if (tool.status === 'maintenance') {
     buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">系統維護中暫停使用</button>`;
@@ -58,7 +70,7 @@ export function openModal(tool) {
     buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">工具開發中，即將推出</button>`;
   }
 
-  modalBody.innerHTML = `
+  const contentHtml = `
     ${tool.preview ? `
       <div class="modal-preview">
         <img src="${tool.preview.image}" alt="${tool.title}" />
@@ -91,9 +103,5 @@ export function openModal(tool) {
     </div>
   `;
 
-  modal.style.display = 'flex';
-
-  requestAnimationFrame(() => {
-    modal.classList.add('active');
-  });
+  openCustomModal(contentHtml);
 }

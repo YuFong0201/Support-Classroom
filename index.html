@@ -5,10 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>奇老師的資源教室</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- 開場防閃爍同步判斷：在瀏覽器繪製任何畫面之前執行 -->
+  <script>
+    if (sessionStorage.getItem('splashPlayed') !== 'true') {
+      document.documentElement.classList.add('is-splashing');
+    }
+  </script>
+
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/bento.css">
   <link rel="stylesheet" href="css/modal.css">
+
+  <!-- 動畫與平滑滾動依賴套件：Anime.js / WOW.js / Lenis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js" defer></script>
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js" defer></script>
 </head>
 <body>
 
@@ -17,12 +30,15 @@
     <nav class="navbar">
       <div class="logo">
         <a href="index.html">
-         <span class="logo-prefix">奇老師的</span>
-         <span class="logo-rotator">
-            <span class="logo-word text-blue active">資源</span>
-            <span class="logo-word text-red">支援</span>
+          <img src="assets/images/logo.png" alt="奇老師的資源教室 Logo" class="logo-img">
+          <span class="logo-text-group">
+            <span class="logo-prefix">奇老師的</span>
+            <span class="logo-rotator">
+              <span class="logo-word text-blue active">資源</span>
+              <span class="logo-word text-red">支援</span>
+            </span>
+            <span class="logo-suffix">教室</span>
           </span>
-          <span class="logo-suffix">教室</span>
         </a>
       </div>
 
@@ -54,7 +70,7 @@
         <span class="badge-dot"></span> 最新工具
       </div>
 
-      <!-- 大型熱門工具圖卡 (加上 id="hero-reveal-window"，由 hero.js 動態渲染內容與監聽點擊) -->
+      <!-- 大型熱門工具圖卡 -->
       <div class="hero-reveal-window" id="hero-reveal-window" style="cursor: pointer;">
         <img src="" alt="最新工具預覽" class="hero-reveal-img" id="hero-reveal-img" />
         <div class="hero-reveal-overlay">
@@ -62,19 +78,33 @@
         </div>
       </div>
 
-      <!-- 探索更多工具按鈕 -->
-      <div class="hero-cta-group">
-        <button id="btn-explore" type="button" class="cta-btn-primary">探索更多工具 <i>↓</i></button>
+      <!-- 向下滑動導引指示器 -->
+      <div class="hero-scroll-cue" id="hero-scroll-cue" title="向下滑動瀏覽全系列工具">
+        <span class="scroll-cue-mouse">
+          <span class="scroll-cue-wheel"></span>
+        </span>
+        <span>向下滑動探索全系列工具</span>
       </div>
-    </div>
   </main>
 
-  <!-- 3. 其他工具圖卡區域 -->
-  <section id="more-tools" class="bento-section" style="display: none;">
+  <!-- 3. 全系列教學工具圖卡區域 -->
+  <section id="more-tools" class="bento-section">
     <div id="bento-container"></div>
   </section>
 
-  <!-- 4. Modal 彈窗 -->
+  <!-- 4. 網站通用頁尾 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-copyright">
+        &copy; <span id="footer-year">2026</span> 奇老師的資源教室. All rights reserved.
+      </div>
+      <div class="footer-actions">
+        <button type="button" id="btn-about-me" class="footer-about-btn">關於本站</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 5. Modal 彈窗 -->
   <div id="tool-modal" class="modal-overlay" style="display: none;">
     <div class="modal-card">
       <button id="modal-close" type="button" class="modal-close-btn" aria-label="關閉彈窗">&times;</button>
