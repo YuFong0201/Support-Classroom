@@ -263,3 +263,131 @@ html.is-vt-morphing .modal-card {
   overflow: hidden;
   object-fit: cover;
 }
+/* ==========================================================================
+   小螢幕視窗高度自適應與「主要特色與課堂功能」獨立捲動設計 (iPhone SE 等小機型優化)
+   ========================================================================== */
+
+/* 1. 限制彈窗最大高度在動態可視視窗 (dvh) 內，避免被瀏覽器網址列或底部工具列裁切 */
+.modal-card {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow: hidden;
+}
+
+/* 2. 讓 #modal-body 繼承彈性高度約束 */
+#modal-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 3. 頂部預覽圖在高度受限時維持比例不變形，不擠壓下方按鈕 */
+.modal-preview {
+  flex-shrink: 0;
+}
+
+/* 4. 彈窗內文區採用 Flex 垂直排列，確保底部按鈕永遠固定在視窗內 */
+.modal-body-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.modal-header-info,
+.modal-title,
+.modal-platforms,
+.modal-description {
+  flex-shrink: 0;
+}
+
+/* 5. 核心改動：當視窗高度不足以容納全部內容時，僅讓「主要特色與課堂功能」區塊產生獨立捲動 */
+.modal-features {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 6px;
+  margin-bottom: 1.1rem;
+}
+
+/* 美化特色清單的細緻捲軸（僅在內容超出高度需要滾動時自動出現） */
+.modal-features::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-features::-webkit-scrollbar-track {
+  background: rgba(17, 24, 39, 0.04);
+  border-radius: 999px;
+}
+
+.modal-features::-webkit-scrollbar-thumb {
+  background: rgba(0, 159, 183, 0.35);
+  border-radius: 999px;
+}
+
+.modal-features::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 159, 183, 0.65);
+}
+
+/* 6. 底部行動按鈕永遠保持在原位不被推擠出畫面 */
+.modal-action-btn {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* 7. 針對 iPhone SE 等超小高度螢幕 (高度 <= 700px 或寬度 <= 480px) 微調垂直間距與預覽圖高度 */
+@media (max-width: 480px), (max-height: 700px) {
+  .modal-card {
+    max-height: 92dvh;
+  }
+
+  .modal-preview {
+    max-height: 155px;
+  }
+
+  .modal-preview img,
+  .modal-preview video {
+    max-height: 155px;
+    object-fit: cover;
+  }
+
+  .modal-body-content {
+    padding: 1.1rem 1.25rem 1.25rem 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .modal-platforms {
+    margin-bottom: 0.65rem;
+  }
+
+  .modal-description {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+  }
+
+  .modal-features h3 {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    padding-bottom: 0.35rem;
+    margin-top: 0;
+    z-index: 2;
+  }
+
+  .modal-features li {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+}
