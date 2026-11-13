@@ -1,3 +1,7 @@
+/* ==========================================================================
+   Modal 工具預覽彈窗專用樣式 (含背景景深縮放特效，無外圈流光框)
+   ========================================================================== */
+
 /* 背景頁面元素景深過渡準備 */
 body > header,
 body > main,
@@ -45,7 +49,7 @@ body.modal-open > footer {
   opacity: 1;
 }
 
-/* 彈窗主體 (純淨極簡白底，無流光邊框) */
+/* 彈窗主體 (純淨極簡白底，禁止水平溢出以徹底杜絕水平捲動條) */
 .modal-content,
 .modal-card {
   position: relative;
@@ -55,6 +59,7 @@ body.modal-open > footer {
   max-height: 85vh;
   max-height: 85dvh;
   border-radius: 24px;
+  overflow-x: hidden;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(17, 24, 39, 0.06);
   -webkit-overflow-scrolling: touch;
@@ -179,7 +184,7 @@ body.modal-open > footer {
   margin: 0;
 }
 
-/* 操作按鈕 (對齊品牌色彩系統) */
+/* 操作按鈕：僅過渡背景色與陰影，避免 CSS transition 與 JS 磁吸物理位移打架 */
 .modal-action-btn {
   display: block;
   width: 100%;
@@ -191,7 +196,7 @@ body.modal-open > footer {
   font-size: 1rem;
   font-weight: 700;
   border-radius: 50px;
-  transition: all 0.2s ease;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
   border: none;
   cursor: pointer;
   box-sizing: border-box;
@@ -199,7 +204,7 @@ body.modal-open > footer {
 
 .modal-action-btn:hover:not(.disabled) {
   background-color: #009FB7;
-  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -6px rgba(0, 159, 183, 0.45);
 }
 
 .modal-action-btn.disabled {
@@ -238,4 +243,23 @@ body.modal-open > footer {
     width: 44px;
     height: 44px;
   }
+}
+
+html.is-vt-morphing .modal-overlay,
+html.is-vt-morphing .modal-content,
+html.is-vt-morphing .modal-card {
+  transition: none !important;
+}
+
+::view-transition-group(active-tool-preview) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000000;
+}
+
+::view-transition-old(active-tool-preview),
+::view-transition-new(active-tool-preview) {
+  border-radius: 24px;
+  overflow: hidden;
+  object-fit: cover;
 }

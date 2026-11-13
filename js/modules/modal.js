@@ -1,6 +1,10 @@
 /**
- * Modal Module (彈窗控制模組 - 支援背景景深縮放與統一開啟介面)
+ * Modal Module (彈窗控制模組 - 支援 View Transitions API 共享元素空間形變與背景景深縮放)
  */
+import { initMagneticButtons } from './microInteractions.js';
+
+let activeSourceElement = null;
+let isTransitioning = false;
 
 export function initModal() {
   const modal = document.getElementById('tool-modal');
@@ -29,13 +33,46 @@ export function initModal() {
 
 export function closeModal() {
   const modal = document.getElementById('tool-modal');
-  if (!modal) return;
+  if (!modal || isTransitioning) return;
 
-  // 移除動畫與背景景深縮放狀態
+  const modalPreview = modal.querySelector('.modal-preview');
+  const canUseViewTransition =
+    typeof document.startViewTransition === 'function' &&
+    activeSourceElement &&
+    document.body.contains(activeSourceElement) &&
+    modalPreview;
+
+  // 若具備來源縮圖元素且瀏覽器支援 View Transitions API，執行反向飛回原位動畫
+  if (canUseViewTransition) {
+    isTransitioning = true;
+    const sourceEl = activeSourceElement;
+    activeSourceElement = null;
+
+    document.documentElement.classList.add('is-vt-morphing');
+    modalPreview.style.viewTransitionName = 'active-tool-preview';
+
+    const transition = document.startViewTransition(() => {
+      modalPreview.style.viewTransitionName = '';
+      sourceEl.style.viewTransitionName = 'active-tool-preview';
+
+      modal.classList.remove('active');
+      document.body.classList.remove('modal-open');
+      modal.style.display = 'none';
+    });
+
+    transition.finished.finally(() => {
+      sourceEl.style.viewTransitionName = '';
+      document.documentElement.classList.remove('is-vt-morphing');
+      isTransitioning = false;
+    });
+    return;
+  }
+
+  // 標準關閉動畫（無來源元素或舊版瀏覽器備援）
+  activeSourceElement = null;
   modal.classList.remove('active');
   document.body.classList.remove('modal-open');
 
-  // 等待淡出動畫完畢後隱藏元素
   setTimeout(() => {
     modal.style.display = 'none';
   }, 240);
@@ -44,17 +81,59 @@ export function closeModal() {
 /**
  * 通用自訂內容開啟函式（供「關於我」等非工具類彈窗共用景深特效）
  */
-export function openCustomModal(htmlContent) {
+export function openCustomModal(htmlContent, sourceElement = null) {
   const modal = document.getElementById('tool-modal');
   const modalBody = document.getElementById('modal-body');
-  if (!modal || !modalBody) return;
+  if (!modal || !modalBody || isTransitioning) return;
 
   if (modal.parentElement !== document.body) {
     document.body.appendChild(modal);
   }
 
+  const canUseViewTransition =
+    typeof document.startViewTransition === 'function' &&
+    sourceElement &&
+    document.body.contains(sourceElement);
+
+  if (canUseViewTransition) {
+    isTransitioning = true;
+    activeSourceElement = sourceElement;
+
+    document.documentElement.classList.add('is-vt-morphing');
+    sourceElement.style.viewTransitionName = 'active-tool-preview';
+
+    const transition = document.startViewTransition(() => {
+      sourceElement.style.viewTransitionName = '';
+
+      modalBody.innerHTML = htmlContent;
+      const newPreview = modalBody.querySelector('.modal-preview');
+      if (newPreview) {
+        newPreview.style.viewTransitionName = 'active-tool-preview';
+      }
+
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+      document.body.classList.add('modal-open');
+      initMagneticButtons(modalBody);
+    });
+
+    transition.finished.finally(() => {
+      const newPreview = modalBody.querySelector('.modal-preview');
+      if (newPreview) {
+        newPreview.style.viewTransitionName = '';
+      }
+      document.documentElement.classList.remove('is-vt-morphing');
+      isTransitioning = false;
+    });
+    return;
+  }
+
+  // 標準開啟動畫（例如從 Ctrl+K 面板或頁尾「關於本站」開啟）
+  activeSourceElement = null;
   modalBody.innerHTML = htmlContent;
   modal.style.display = 'flex';
+
+  initMagneticButtons(modalBody);
 
   requestAnimationFrame(() => {
     modal.classList.add('active');
@@ -62,7 +141,12 @@ export function openCustomModal(htmlContent) {
   });
 }
 
-export function openModal(tool) {
+/**
+ * 開啟工具詳情彈窗
+ * @param {Object} tool - 工具資料物件
+ * @param {HTMLElement|null} sourceElement - 觸發點擊的來源預覽圖框元素（用於共享元素空間形變）
+ */
+export function openModal(tool, sourceElement = null) {
   let buttonHtml = `<a href="${tool.url || '#'}" target="_blank" class="modal-action-btn">立即開啟工具 ➔</a>`;
   if (tool.status === 'maintenance') {
     buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">系統維護中暫停使用</button>`;
@@ -103,5 +187,5 @@ export function openModal(tool) {
     </div>
   `;
 
-  openCustomModal(contentHtml);
+  openCustomModal(contentHtml, sourceElement);
 }

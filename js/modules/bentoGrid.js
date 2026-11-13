@@ -65,14 +65,12 @@ export async function renderBentoGrid() {
 
 /**
  * 游標聚光燈光暈邊框追蹤 (Spotlight Glow Border)
- * 監聽網格容器滑鼠座標，讓相鄰卡片邊框同步產生品牌雙色極光感應
  */
 function initSpotlightEffect() {
   const grid = document.getElementById('bento-grid');
   const cards = document.querySelectorAll('.bento-card');
   if (!grid || !cards.length) return;
 
-  // 僅在支援精準指標 (滑鼠/觸控筆) 的裝置啟用，避免手機觸控殘留光暈
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
   let rafId = null;
@@ -102,7 +100,7 @@ function initSpotlightEffect() {
 }
 
 /**
- * 結合 WOW.js (滾動觸發偵測) + Anime.js (側邊平移進場動畫)
+ * 結合 WOW.js (滾動觸發偵測) + Anime.js (原本的側邊平移進場動畫)
  */
 function initScrollAnimations() {
   const cards = document.querySelectorAll('.wow-anime-card');
@@ -178,6 +176,7 @@ function initCardEvents(tools) {
   document.querySelectorAll('.bento-card').forEach(card => {
     const toolId = card.getAttribute('data-id');
     const currentTool = tools.find(t => String(t.id) === String(toolId));
+    const previewWrapper = card.querySelector('.preview-wrapper');
 
     const video = card.querySelector('.preview-video');
     if (video) {
@@ -198,7 +197,7 @@ function initCardEvents(tools) {
 
     card.addEventListener('click', () => {
       if (currentTool) {
-        openModal(currentTool);
+        openModal(currentTool, previewWrapper);
       }
     });
   });

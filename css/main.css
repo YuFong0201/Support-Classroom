@@ -60,7 +60,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1380px; /* 與下方 Hero 大圖卡、Bento 網格、頁尾左右完全切齊 */
+  max-width: 1380px;
   margin: 0 auto;
   padding: 1rem 1.5rem;
 }
@@ -161,20 +161,22 @@ header {
    ========================================================================== */
 .nav-links {
   display: flex;
+  align-items: center;
   list-style: none;
-  gap: 1.25rem;
+  gap: 1.1rem;
   margin: 0;
   padding: 0;
 }
 
 .nav-links a {
+  display: inline-block;
   text-decoration: none;
   color: #4B5563;
   font-weight: 600;
   font-size: 0.95rem;
   padding: 8px 16px;
   border-radius: 50px;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .nav-links a:hover {
@@ -257,6 +259,7 @@ header {
     height: 100dvh;
     background-color: #ffffff;
     flex-direction: column;
+    align-items: stretch;
     justify-content: flex-start;
     padding: 5rem 2rem 2rem 2rem;
     gap: 1.25rem;
@@ -348,7 +351,7 @@ header {
   border: 1px solid rgba(17, 24, 39, 0.15);
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
@@ -356,7 +359,6 @@ header {
   color: #FFFFFF;
   background-color: #111827;
   border-color: #111827;
-  transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
 }
 
@@ -371,31 +373,98 @@ header {
     gap: 0.875rem;
   }
 }
+
+/* ==========================================================================
+   全站頁面切換「雙色品牌幕簾掃過轉場」(Brand Wipe Transition)
+   ========================================================================== */
 #page-transition-overlay {
   position: fixed;
   inset: 0;
   z-index: 9998;
   background-color: #FFFFFF;
-  opacity: 1;
+  box-shadow: 0 -12px 35px rgba(17, 24, 39, 0.08);
   pointer-events: none;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate3d(0, 0%, 0);
+  transition: transform 0.52s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
 }
 
-#page-transition-overlay.is-loaded {
-  opacity: 0;
+#page-transition-overlay .wipe-accent-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #009FB7 0%, #38BDF8 50%, #FE4A49 100%);
+  box-shadow: 0 2px 14px rgba(0, 159, 183, 0.45);
 }
 
-#page-transition-overlay.is-leaving {
-  opacity: 1;
+#page-transition-overlay.no-transition {
+  transition: none !important;
+  transform: translate3d(0, 102%, 0);
+}
+
+#page-transition-overlay.is-revealed {
+  transform: translate3d(0, -102%, 0);
+}
+
+#page-transition-overlay.is-entering {
   pointer-events: auto;
-  transition-duration: 0.26s;
+  transform: translate3d(0, 0%, 0);
+  transition-duration: 0.36s;
 }
 
-/* 首頁初次播放 Splash 開場動畫時，隱藏白底轉場遮罩以免衝突 */
 html.is-splashing #page-transition-overlay {
   display: none;
 }
 
+/* ==========================================================================
+   標題文字「幾何遮罩逐字揭露」(Kinetic Typography Reveal)
+   ========================================================================== */
+.kinetic-title {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+}
+
+.changelog-container .kinetic-title,
+.feedback-container .kinetic-title {
+  justify-content: flex-start;
+}
+
+.kinetic-char-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.kinetic-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(115%);
+  will-change: transform, opacity;
+}
+
+.kinetic-space {
+  display: inline-block;
+  width: 0.3em;
+}
+
+/* 磁吸按鈕 GPU 加速優化 */
+.nav-links a,
+.nav-cmd-btn,
+.footer-about-btn,
+.modal-action-btn,
+.submit-btn {
+  will-change: transform;
+}
+
+/* ==========================================================================
+   極簡白色懸浮快速回頂部進度環 (Scroll Progress Ring)
+   ========================================================================== */
 .scroll-progress-btn {
   position: fixed;
   right: 1.75rem;
@@ -415,8 +484,6 @@ html.is-splashing #page-transition-overlay {
   justify-content: center;
   box-shadow: 0 10px 25px -5px rgba(17, 24, 39, 0.14),
               0 2px 8px rgba(17, 24, 39, 0.06);
-
-  /* 預設隱藏，向下滑動後浮現 */
   opacity: 0;
   visibility: hidden;
   transform: translateY(16px) scale(0.9);
@@ -443,8 +510,8 @@ html.is-splashing #page-transition-overlay {
   transform: translateY(0) scale(0.96);
 }
 
-/* 當 Modal 彈窗開啟或 Splash 播放期間隱藏 */
 body.modal-open .scroll-progress-btn,
+body.cmd-open .scroll-progress-btn,
 html.is-splashing .scroll-progress-btn {
   opacity: 0;
   pointer-events: none;
@@ -455,7 +522,7 @@ html.is-splashing .scroll-progress-btn {
   inset: 0;
   width: 100%;
   height: 100%;
-  transform: rotate(-90deg); /* 從 12 點鐘方向開始順時針繪製進度 */
+  transform: rotate(-90deg);
 }
 
 .progress-ring-track {
@@ -492,5 +559,325 @@ html.is-splashing .scroll-progress-btn {
     bottom: 1.25rem;
     width: 48px;
     height: 48px;
+  }
+}
+
+/* ==========================================================================
+   全站觸控/點擊微光波紋 (Tactile Click Ripple)
+   ========================================================================== */
+.tactile-click-ripple {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  margin-top: -7px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999999;
+  background: radial-gradient(
+    circle,
+    rgba(0, 159, 183, 0.35) 0%,
+    rgba(254, 74, 73, 0.25) 60%,
+    transparent 100%
+  );
+  border: 1.5px solid rgba(0, 159, 183, 0.55);
+  animation: tactileRippleExpand 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tactileRippleExpand {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(4.2);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   全站快捷指令搜尋面板 (Command Palette: Ctrl+K / Cmd+K)
+   ========================================================================== */
+.nav-cmd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 14px;
+  background-color: #F3F4F6;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 50px;
+  color: #4B5563;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-cmd-btn:hover {
+  background-color: #FFFFFF;
+  color: #111827;
+  border-color: rgba(0, 159, 183, 0.45);
+  box-shadow: 0 4px 12px rgba(0, 159, 183, 0.12);
+}
+
+.nav-cmd-kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6B7280;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 2px 6px;
+  line-height: 1.1;
+}
+
+.cmd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999995;
+  background-color: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 1rem 1rem 1rem;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cmd-overlay.is-open {
+  opacity: 1;
+}
+
+.cmd-dialog {
+  width: 100%;
+  max-width: 620px;
+  background-color: #FFFFFF;
+  border-radius: 22px;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.35),
+              0 0 0 1px rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+  transform: translateY(-12px) scale(0.96);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cmd-overlay.is-open .cmd-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.cmd-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.cmd-search-icon {
+  color: #009FB7;
+  flex-shrink: 0;
+}
+
+.cmd-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+  background: transparent;
+}
+
+.cmd-input::placeholder {
+  color: #9CA3AF;
+}
+
+.cmd-esc-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6B7280;
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.cmd-esc-tag:hover {
+  background: #E5E7EB;
+  color: #111827;
+}
+
+.cmd-results {
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.cmd-group-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9CA3AF;
+  padding: 0.5rem 0.75rem 0.25rem 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cmd-item.is-selected {
+  background-color: rgba(0, 159, 183, 0.09);
+}
+
+.cmd-item-thumb {
+  width: 44px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #F3F4F6;
+}
+
+.cmd-item-icon {
+  width: 44px;
+  height: 34px;
+  border-radius: 8px;
+  background: #F3F4F6;
+  color: #111827;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cmd-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmd-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cmd-item-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-item.is-selected .cmd-item-title {
+  color: #009FB7;
+}
+
+.cmd-item-sub {
+  font-size: 0.82rem;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.cmd-status-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 50px;
+  color: #fff;
+}
+
+.cmd-status-pill.is-maint {
+  background-color: #EF4444;
+}
+
+.cmd-status-pill.is-soon {
+  background-color: #F59E0B;
+}
+
+.cmd-item-tags {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.cmd-item-tags span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #009FB7;
+  background: rgba(0, 159, 183, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.cmd-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: #6B7280;
+  font-size: 0.95rem;
+}
+
+.cmd-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background-color: #F9FAFB;
+  border-top: 1px solid #F3F4F6;
+  font-size: 0.78rem;
+  color: #6B7280;
+}
+
+.cmd-hints {
+  display: flex;
+  gap: 14px;
+}
+
+.cmd-hints kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-right: 3px;
+  font-size: 0.72rem;
+  color: #374151;
+}
+
+.cmd-brand-tip {
+  font-weight: 700;
+  color: #009FB7;
+}
+
+@media (max-width: 768px) {
+  .nav-cmd-btn {
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px 18px;
+    font-size: 1rem;
+  }
+
+  .cmd-overlay {
+    padding-top: 8vh;
+  }
+
+  .cmd-item-tags,
+  .cmd-hints {
+    display: none;
   }
 }

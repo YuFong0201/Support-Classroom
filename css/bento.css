@@ -1,12 +1,12 @@
 /* ==========================================================================
-   Bento Grid 卡片區塊 (最多 2 欄並排 + 游標聚光燈光暈邊框 Spotlight Glow)
+   Bento Grid 卡片區塊 (最多 2 欄並排 + 游標聚光燈光暈邊框 + 3D 雙層視差標籤)
    ========================================================================== */
 
 .bento-section {
   width: 100%;
   max-width: 1380px;
   margin: 0 auto;
-  padding: 3rem 1.5rem 6rem 1.5rem;
+  padding: 3rem 1.5rem 4.5rem 1.5rem;
   box-sizing: border-box;
   scroll-margin-top: 5rem;
   overflow-x: clip;
@@ -42,25 +42,24 @@
   background: #ffffff;
   border: 1px solid #E5E7EB;
   border-radius: 24px;
-  overflow: hidden;
+  transform-style: preserve-3d;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  /* 游標聚光燈座標預設值 */
   --mouse-x: -999px;
   --mouse-y: -999px;
   --spotlight-opacity: 0;
 }
 
-/* 1. 游標聚光燈發光邊框層 (透過 CSS Mask 精準鏤空出 2px 品牌雙色光暈邊框) */
+/* 1. 游標聚光燈發光邊框層 */
 .bento-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  padding: 2px; /* 發光邊框粗細 */
+  border-radius: 24px;
+  padding: 2px;
   background: radial-gradient(
     420px circle at var(--mouse-x) var(--mouse-y),
     rgba(0, 159, 183, 0.95) 0%,
@@ -68,6 +67,7 @@
     transparent 80%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: var(--spotlight-opacity);
@@ -81,7 +81,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: 24px;
   background: radial-gradient(
     550px circle at var(--mouse-x) var(--mouse-y),
     rgba(0, 159, 183, 0.07) 0%,
@@ -116,7 +116,7 @@
   opacity: 0.7;
 }
 
-/* 維護 / 即將推出 Badge 標籤 */
+/* 維護 / 即將推出 Badge 標籤（3D 空間最高浮起層 Z = 32px） */
 .card-badge {
   position: absolute;
   top: 16px;
@@ -129,6 +129,8 @@
   padding: 5px 12px;
   border-radius: 50px;
   backdrop-filter: blur(4px);
+  transform: translateZ(32px);
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.22);
 }
 
 .bento-card.status-maintenance .card-badge {
@@ -140,7 +142,7 @@
 }
 
 /* ==========================================================================
-   Bento Grid 縮圖與 Hover 影片淡入切換
+   Bento Grid 縮圖與 Hover 影片淡入切換（上方圓角裁切）
    ========================================================================== */
 
 .preview-wrapper {
@@ -149,6 +151,9 @@
   height: clamp(220px, 24vw, 320px);
   overflow: hidden;
   background: #F3F4F6;
+  border-top-left-radius: 23px;
+  border-top-right-radius: 23px;
+  transform: translateZ(0px);
 }
 
 .preview-img {
@@ -182,13 +187,17 @@
   position: relative;
   z-index: 2;
   padding: 1.5rem 1.75rem;
+  transform-style: preserve-3d;
 }
 
+/* 平台標籤（3D 空間中景浮起層 Z = 22px） */
 .platform-icons {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 0.65rem;
+  transform: translateZ(22px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .platform-icons span,
@@ -199,13 +208,137 @@
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 6px;
+  transition: box-shadow 0.3s ease;
 }
 
+.bento-card:hover .platform-icons span,
+.bento-card:hover .platform-icons i {
+  box-shadow: 0 4px 10px rgba(0, 159, 183, 0.14);
+}
+
+/* 工具標題（3D 空間前景浮起層 Z = 14px） */
 .card-title {
   font-size: 1.35rem;
   font-weight: 800;
   color: #111827;
   margin: 0;
+  transform: translateZ(14px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+.bento-card:hover .card-title {
+  color: #009FB7;
+}
+
+/* ==========================================================================
+   空間物理「重力彈珠工具收藏盒」(Matter.js Interactive Toybox)
+   ========================================================================== */
+.toybox-section {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto 5rem auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+.toybox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.toybox-title {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.toybox-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #6B7280;
+}
+
+.toybox-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111827;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.toybox-reset-btn:hover {
+  border-color: #009FB7;
+  color: #009FB7;
+  box-shadow: 0 6px 14px rgba(0, 159, 183, 0.14);
+}
+
+.toybox-stage {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(180deg, #F9FAFB 0%, #F3F4F6 100%);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 28px;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+  box-shadow: inset 0 2px 12px rgba(17, 24, 39, 0.03);
+}
+
+.toybox-stage.is-grabbing {
+  cursor: grabbing;
+}
+
+.toybox-hint-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: rgba(17, 24, 39, 0.035);
+  pointer-events: none;
+}
+
+.toybox-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-size: 0.96rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px -4px rgba(17, 24, 39, 0.14);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.toybox-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -227,7 +360,7 @@
 
 @media (max-width: 768px) {
   .bento-section {
-    padding: 2.5rem 1rem 4rem 1rem;
+    padding: 2.5rem 1rem 3rem 1rem;
   }
 
   .bento-grid {
@@ -237,5 +370,20 @@
 
   .preview-wrapper {
     height: clamp(180px, 54vw, 260px);
+  }
+
+  .toybox-section {
+    padding: 0 1rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .toybox-stage {
+    height: 240px;
+    border-radius: 22px;
+  }
+
+  .toybox-pill {
+    padding: 9px 16px;
+    font-size: 0.85rem;
   }
 }

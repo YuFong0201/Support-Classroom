@@ -94,13 +94,46 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
+/* 珊瑚紅圓點 ＋ 雙層同心圓雷達脈衝呼吸光環 */
 .badge-dot {
+  position: relative;
   width: 8px;
   height: 8px;
   background-color: #FE4A49;
   border-radius: 50%;
   display: inline-block;
-  box-shadow: 0 0 6px rgba(254, 74, 73, 0.6);
+  box-shadow: 0 0 8px rgba(254, 74, 73, 0.75);
+}
+
+.badge-dot::before,
+.badge-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1.5px solid #FE4A49;
+  opacity: 0;
+  pointer-events: none;
+  animation: radarPulseAura 2.6s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.badge-dot::after {
+  animation-delay: 1.3s;
+}
+
+@keyframes radarPulseAura {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.85;
+  }
+  75% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
 }
 
 /* 5. 熱門工具卡片展示視窗 */

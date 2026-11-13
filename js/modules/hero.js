@@ -1,5 +1,5 @@
 /**
- * Hero Module (支援動畫影片/GIF與圖片動態切換)
+ * Hero Module (支援動畫影片/GIF與圖片動態切換 + View Transitions 共享元素形變開啟彈窗)
  */
 import { openModal } from './modal.js';
 
@@ -31,31 +31,22 @@ async function loadFeaturedTool() {
     const featuredTool = tools.find(t => t.featured === true) || tools[0];
 
     if (featuredTool) {
-      // 1. 判斷是否有影片路徑，若有影片則生成 <video>，無影片則生成 <img>
       const videoPath = featuredTool.preview?.video;
       const imagePath = featuredTool.preview?.image || 'https://via.placeholder.com/1200x600/111827/ffffff?text=Featured+Tool';
 
       let mediaHtml = '';
       if (videoPath) {
-        // 自動播放 (autoplay)、靜音 (muted)、循環 (loop)、手機相容 (playsinline)
         mediaHtml = `<video src="${videoPath}" autoplay loop muted playsinline class="hero-reveal-img" id="hero-reveal-media"></video>`;
       } else {
         mediaHtml = `<img src="${imagePath}" alt="${featuredTool.title}" class="hero-reveal-img" id="hero-reveal-media" />`;
       }
 
-      // 2. 將媒體元素塞入 Hero 視窗中（保留原本的 overlay 標題）
-      const overlay = heroWindow.querySelector('.hero-reveal-overlay');
-      // 先移除舊的媒體標籤（避免重複堆疊）
       const oldMedia = heroWindow.querySelector('.hero-reveal-img');
       if (oldMedia) oldMedia.remove();
 
-      // 插入全新的媒體 DOM
       heroWindow.insertAdjacentHTML('afterbegin', mediaHtml);
-
-      // 3. 更新顯示標題
       heroText.textContent = `最近更新：${featuredTool.title} ${featuredTool.version || ''}`;
 
-      // 4. 圖片/影片加載失敗防呆處理
       const mediaEl = document.getElementById('hero-reveal-media');
       if (mediaEl) {
         mediaEl.onerror = () => {
@@ -65,8 +56,8 @@ async function loadFeaturedTool() {
         };
       }
 
-      // 5. 點擊開啟 Modal 彈窗
-      heroWindow.onclick = () => openModal(featuredTool);
+      // 點擊 Hero 大圖卡時，以 heroWindow 作為共享元素起點平滑延展成 Modal 頂部預覽大圖
+      heroWindow.onclick = () => openModal(featuredTool, heroWindow);
     }
   } catch (error) {
     console.error('無法載入 Hero 熱門工具資料：', error);
