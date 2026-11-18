@@ -85,5 +85,49 @@
       "透過卡牌引導，激發學生想像力與創造力，同時訓練學生的敘事能力與寫作技巧。",
       "適合於電腦上與兩三位同學一起遊玩，也適合組隊在電子白板上全班同樂。"
     ]
+  },
+
+    {
+    "id": "CR-3D",
+    "title": "古氏積木3D",
+    "featured": false,
+    "status": "active",
+    "version": "V0.9.1 (beta)",
+    "updatedAt": "2026-11-17",
+    "description": "古氏積木3D版",
+    "platforms": ["電子白板", "電腦", "平板(需全螢幕)", "手機(需全螢幕)"],
+    "preview": {
+      "image": "assets/images/previews/CR-3D.png",
+      "video": ""
+    },
+    "type": "external",
+    "url": "https://yufong0201.github.io/CR-3D/",
+    "features": [
+      "適用於電子白板等觸控介面，單指旋轉、雙指平移畫面",
+      "適合教師需要展示給全班學生看時使用，建議搭配實體教具讓學生跟著操作"
+    ]
+  },
+
+    {
+    "id": "Q-doc",
+    "title": "奇蹟編輯器",
+    "featured": false,
+    "status": "active",
+    "version": "V0.6.0 (beta)",
+    "updatedAt": "2026-11-18",
+    "description": "Q-doc",
+    "platforms": ["電腦"],
+    "preview": {
+      "image": "assets/images/previews/Q-doc.png",
+      "video": "assets/videos/previews/Q-doc-Video.mp4"
+    },
+    "type": "external",
+    "url": "https://yufong0201.github.io/Q-doc/",
+    "features": [
+      "Q-doc是一款為教師專門設計的考卷編輯器，用來解決Word排版太難用的問題",
+      "平時製作學習單及小考卷時，可以使用預設題型模板，或使用空白模板自行設計題型",
+      "內建破音字注音便利修改、生難字檢測等常用功能(實驗性)、並附帶適用於特教生的題目語音報讀功能",
+      "且除了輸出紙本及PDF檔外，也支援線上作答(實驗性)"
+    ]
   }
 ]
