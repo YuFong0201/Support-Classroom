@@ -119,7 +119,7 @@
     "platforms": ["電腦"],
     "preview": {
       "image": "assets/images/previews/Q-doc.png",
-      "video": "assets/videos/previews/Q-doc-Video.mp4"
+      "video": "assets/videos/previews/Q-doc.mp4"
     },
     "type": "external",
     "url": "https://yufong0201.github.io/Q-doc/",
