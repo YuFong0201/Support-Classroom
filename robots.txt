@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /js/
+Disallow: /css/
+Disallow: /assets/images/previews/
+Sitemap: https://yufong0201.github.io/Support-Classroom/sitemap.xml
