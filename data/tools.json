@@ -7,6 +7,7 @@
     "version": "V1.0.0",
     "updatedAt": "2026-11-05",
     "description": "提供國小各年級數學主題無限隨機抽題與自動批改，支援線上練習與列印學習單。",
+    "categories": ["數學", "備課工具"],
     "platforms": ["電腦"],
     "preview": {
       "image": "assets/images/previews/Unlimited-Math-Problem-Bank.png",
@@ -29,6 +30,7 @@
     "version": "V1.2.0",
     "updatedAt": "2026-11-05",
     "description": "參考現行數學能力測驗設計的易用型診斷系統，提供普通班教師在申請特教鑑定前的參考依據。",
+    "categories": ["數學", "備課工具"],
     "platforms": ["電腦"],
     "preview": {
       "image": "assets/images/previews/basic-math-check.png",
@@ -42,7 +44,7 @@
       "評量報告可做為普通班教師是否向輔導室提出特教鑑定申請的參考資料"
     ]
   },
-  
+
   {
     "id": "Time-system-for-teachers",
     "title": "教室時間管理大師",
@@ -51,6 +53,7 @@
     "version": "V1.0.0",
     "updatedAt": "2026-11-09",
     "description": "一個簡單的數位時鐘",
+    "categories": ["教學工具"],
     "platforms": ["電子白板 (推薦)", "電腦", "平板"],
     "preview": {
       "image": "assets/images/previews/Time-system-for-teachers.png",
@@ -73,6 +76,7 @@
     "version": "V1.5.0",
     "updatedAt": "2026-11-12",
     "description": "《今天也要前往異世界?!》",
+    "categories": ["國語", "遊戲"],
     "platforms": ["電子白板 (推薦)", "電腦 (推薦)", "平板", "手機"],
     "preview": {
       "image": "assets/images/previews/isekai-everyday.png",
@@ -87,7 +91,7 @@
     ]
   },
 
-    {
+  {
     "id": "CR-3D",
     "title": "古氏積木3D",
     "featured": false,
@@ -95,7 +99,8 @@
     "version": "V0.9.1 (beta)",
     "updatedAt": "2026-11-18",
     "description": "古氏積木3D版",
-    "platforms": ["電子白板", "電腦", "平板(需全螢幕)", "手機(需全螢幕)"],
+    "categories": ["數學", "教學工具"],
+    "platforms": ["電子白板", "電腦", "平板", "手機"],
     "preview": {
       "image": "assets/images/previews/CR-3D.png",
       "video": ""
@@ -103,12 +108,13 @@
     "type": "external",
     "url": "https://yufong0201.github.io/CR-3D/",
     "features": [
+      "注意 : 平板及手機用戶需點選全螢幕按鈕使用，避免網址列擋住積木選擇區",
       "適用於電子白板等觸控介面，單指旋轉、雙指平移畫面",
       "適合教師需要展示給全班學生看時使用，建議搭配實體教具讓學生跟著操作"
     ]
   },
 
-    {
+  {
     "id": "Q-doc",
     "title": "奇蹟編輯器",
     "featured": false,
@@ -116,6 +122,7 @@
     "version": "V0.6.0 (beta)",
     "updatedAt": "2026-11-18",
     "description": "Q-doc",
+    "categories": ["國語", "備課工具"],
     "platforms": ["電腦"],
     "preview": {
       "image": "assets/images/previews/Q-doc.png",
@@ -124,7 +131,7 @@
     "type": "external",
     "url": "https://yufong0201.github.io/Q-doc/",
     "features": [
-      "Q-doc是一款為教師專門設計的考卷編輯器，用來解決Word排版太難用的問題",
+      "Q-doc是一款為教師專門設計的考卷編輯器，以解決Word排版太難用的問題",
       "平時製作學習單及小考卷時，可以使用預設題型模板，或使用空白模板自行設計題型",
       "內建破音字注音便利修改、生難字檢測等常用功能(實驗性)、並附帶適用於特教生的題目語音報讀功能",
       "且除了輸出紙本及PDF檔外，也支援線上作答(實驗性)"

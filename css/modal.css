@@ -141,6 +141,7 @@ body.modal-open > footer {
   font-size: 1.75rem;
   font-weight: 800;
   color: #111827;
+  width: fit-content;
 }
 
 .modal-platforms {
@@ -148,13 +149,31 @@ body.modal-open > footer {
   gap: 6px;
   margin-bottom: 1rem;
   flex-wrap: wrap;
+  width: fit-content;
 }
 
+/* 工具類型標籤（半透明磨砂珊瑚紅，無外框） */
+.modal-category-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #E11D48;
+  background: rgba(254, 74, 73, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  padding: 4px 10px;
+  border-radius: 50px;
+}
+
+/* 載具平台標籤（半透明磨砂湖水藍，無外框） */
 .modal-platform-badge {
   font-size: 0.75rem;
   font-weight: 700;
   color: #009FB7;
-  background: rgba(0, 159, 183, 0.08);
+  background: rgba(0, 159, 183, 0.09);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
   padding: 4px 10px;
   border-radius: 50px;
 }
@@ -245,24 +264,73 @@ body.modal-open > footer {
   }
 }
 
+/* ==========================================================================
+   原生 View Transitions API 全卡片多層次空間形變動畫設定
+   (卡片外框 + 預覽影片 + 標題 + 平台標籤 四層同步展開/收合)
+   ========================================================================== */
 html.is-vt-morphing .modal-overlay,
 html.is-vt-morphing .modal-content,
 html.is-vt-morphing .modal-card {
   transition: none !important;
 }
 
-::view-transition-group(active-tool-preview) {
-  animation-duration: 0.42s;
+/* 1. 白色圓角卡片外框層（最底層容器） */
+::view-transition-group(active-tool-card) {
+  animation-duration: 0.44s;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1000000;
 }
 
+::view-transition-old(active-tool-card),
+::view-transition-new(active-tool-card) {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.32);
+}
+
+/* 2. 預覽影片 / 縮圖層 */
+::view-transition-group(active-tool-preview) {
+  animation-duration: 0.44s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000001;
+}
+
 ::view-transition-old(active-tool-preview),
 ::view-transition-new(active-tool-preview) {
-  border-radius: 24px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
   overflow: hidden;
   object-fit: cover;
 }
+
+/* 3. 平台標籤膠囊層（維持自然寬高比例，不拉伸變形） */
+::view-transition-group(active-tool-platforms) {
+  animation-duration: 0.44s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000002;
+}
+
+::view-transition-old(active-tool-platforms),
+::view-transition-new(active-tool-platforms) {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+/* 4. 工具標題文字層（最前景層，平滑飛移並放大） */
+::view-transition-group(active-tool-title) {
+  animation-duration: 0.44s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000003;
+}
+
+::view-transition-old(active-tool-title),
+::view-transition-new(active-tool-title) {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
 /* ==========================================================================
    小螢幕視窗高度自適應與「主要特色與課堂功能」獨立捲動設計 (iPhone SE 等小機型優化)
    ========================================================================== */

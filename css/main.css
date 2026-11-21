@@ -39,12 +39,12 @@ html.is-splashing .site-footer {
   transform: translateY(-10px);
 }
 
-/* 導覽列（透光極簡白，支援 Splash 結束後的優雅進場過渡） */
+/* 導覽列（透光極簡白，層級高於品牌藍圓形轉場遮罩 z-index: 98） */
 header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px); 
   border-bottom: 1px solid rgba(17, 24, 39, 0.06);
@@ -54,6 +54,31 @@ header {
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0s linear 0s;
+}
+
+/* 慢速網路導覽列底部流光進度條 */
+.nav-loading-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #009FB7 0%, #38BDF8 50%, #FE4A49 100%);
+  box-shadow: 0 2px 10px rgba(0, 159, 183, 0.5);
+  border-radius: 0 3px 3px 0;
+  pointer-events: none;
+  z-index: 120;
+  transition: width 1.6s cubic-bezier(0.12, 0.8, 0.25, 1), opacity 0.25s ease;
+}
+
+.nav-loading-progress.is-loading {
+  width: 82%;
+}
+
+.nav-loading-progress.is-done {
+  width: 100%;
+  opacity: 0;
+  transition: width 0.18s ease-out, opacity 0.25s ease 0.1s;
 }
 
 .navbar {
@@ -176,7 +201,7 @@ header {
   font-size: 0.95rem;
   padding: 8px 16px;
   border-radius: 50px;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color 0.25s ease, background-color 0.25s ease;
 }
 
 .nav-links a:hover {
@@ -375,46 +400,33 @@ header {
 }
 
 /* ==========================================================================
-   全站頁面切換「雙色品牌幕簾掃過轉場」(Brand Wipe Transition)
+   品牌藍圓形持續擴散轉場遮罩 (Brand Blue Continuous Iris Transition)
+   層級 z-index: 98 精準夾在「主內容與回頂部按鈕 (95) 之上、頂部導覽列 (100) 之下」
    ========================================================================== */
-#page-transition-overlay {
+.brand-circle-transition {
   position: fixed;
   inset: 0;
-  z-index: 9998;
-  background-color: #FFFFFF;
-  box-shadow: 0 -12px 35px rgba(17, 24, 39, 0.08);
+  z-index: 98;
   pointer-events: none;
-  transform: translate3d(0, 0%, 0);
-  transition: transform 0.52s cubic-bezier(0.76, 0, 0.24, 1);
-  will-change: transform;
+  opacity: 0;
+  visibility: hidden;
+  background: radial-gradient(
+    circle at 50% 35%,
+    #14B8CE 0%,
+    #009FB7 52%,
+    #007F94 100%
+  );
+  clip-path: circle(0px at 50% 50%);
+  -webkit-clip-path: circle(0px at 50% 50%);
+  will-change: clip-path, mask-image, opacity;
 }
 
-#page-transition-overlay .wipe-accent-edge {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #009FB7 0%, #38BDF8 50%, #FE4A49 100%);
-  box-shadow: 0 2px 14px rgba(0, 159, 183, 0.45);
-}
-
-#page-transition-overlay.no-transition {
-  transition: none !important;
-  transform: translate3d(0, 102%, 0);
-}
-
-#page-transition-overlay.is-revealed {
-  transform: translate3d(0, -102%, 0);
-}
-
-#page-transition-overlay.is-entering {
+.brand-circle-transition.is-active {
+  visibility: visible;
   pointer-events: auto;
-  transform: translate3d(0, 0%, 0);
-  transition-duration: 0.36s;
 }
 
-html.is-splashing #page-transition-overlay {
+html.is-splashing .brand-circle-transition {
   display: none;
 }
 

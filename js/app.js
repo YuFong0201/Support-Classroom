@@ -14,7 +14,8 @@ import { renderChangelog } from './modules/timeline.js';
 import { initFeedbackForm } from './modules/feedback.js';
 import { initNavbar } from './modules/navbar.js';
 import { initLogoRotator } from './modules/logoRotator.js';
-import { initPageTransition } from './modules/pageTransition.js';
+import { initPageTransition, setPageHydrateHandler } from './modules/pageTransition.js';
+import { initCommandPalette } from './modules/commandPalette.js';
 import { initMagneticButtons, initKineticTitles, initClickRipples } from './modules/microInteractions.js';
 
 /**
@@ -40,7 +41,7 @@ function createScrollProgressRing(getLenis) {
       </defs>
       <circle class="progress-ring-track" cx="26" cy="26" r="${radius}"></circle>
       <circle class="progress-ring-circle" cx="26" cy="26" r="${radius}"
-              style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${circumference};"></circle>
+              style="stroke-dasharray: ${circumference}; stroke-dashoffset:${circumference};"></circle>
     </svg>
     <svg class="progress-ring-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M12 19V5"></path>
@@ -96,11 +97,7 @@ function updateHeroParallax(scrollY) {
   const translateY = scrollY * 0.18;
   const opacity = 1 - progress * 0.65;
 
-  heroWindow.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`;
-  heroWindow.style.opacity = opacity;
-
-  if (heroBadge) {
-    heroBadge.style.transform = `translate3d(0, ${scrollY * 0.1}px, 0)`;
+  heroWindow.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`; heroWindow.style.opacity = opacity;  if (heroBadge) { heroBadge.style.transform = `translate3d(0, ${scrollY * 0.1}px, 0)`;
     heroBadge.style.opacity = Math.max(1 - progress * 1.6, 0);
   }
   if (scrollCue) {
@@ -108,10 +105,7 @@ function updateHeroParallax(scrollY) {
   }
 
   if (glow1) {
-    glow1.style.transform = `translate3d(0, ${-scrollY * 0.25}px, 0)`;
-  }
-  if (glow2) {
-    glow2.style.transform = `translate3d(0, ${scrollY * 0.22}px, 0)`;
+    glow1.style.transform = `translate3d(0, ${-scrollY * 0.25}px, 0)`; } if (glow2) { glow2.style.transform = `translate3d(0, ${scrollY * 0.22}px, 0)`;
   }
 }
 
@@ -143,7 +137,6 @@ function initSmoothScroll(onScrollCallback) {
   }
   requestAnimationFrame(raf);
 
-  // 當 Modal 彈窗或 Ctrl+K 指令面板打開時暫停背景頁面滾動，關閉時恢復
   const syncLenisLock = () => {
     const modal = document.getElementById('tool-modal');
     const isModalOpen = modal && (modal.style.display === 'flex' || modal.style.display === 'block');
@@ -168,10 +161,7 @@ function initSmoothScroll(onScrollCallback) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log("初始化成功");
-
   let lenis = null;
-
   const updateProgressRing = createScrollProgressRing(() => lenis);
 
   const handleScrollUpdate = (scrollY) => {
@@ -179,62 +169,86 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateProgressRing(scrollY);
   };
 
-  initPageTransition();
-
-  lenis = initSmoothScroll(handleScrollUpdate);
-  handleScrollUpdate(window.scrollY);
-
+  // 全站常駐外殼模組（僅初始化一次，切換頁面時永不重複建立）
   initNavbar();
   initLogoRotator();
+  initCommandPalette();
   initModal();
-
-  // 安全動態載入快捷指令面板 (Ctrl+K / Cmd+K)，即使尚未建立該檔案也不影響網站運作
-  try {
-    const { initCommandPalette } = await import('./modules/commandPalette.js');
-    initCommandPalette();
-  } catch (err) {
-    console.warn('commandPalette.js 尚未建立或載入失敗，已自動跳過：', err.message);
-  }
-
-  initMagneticButtons();
   if (typeof initClickRipples === 'function') {
     initClickRipples();
   }
-  initKineticTitles();
 
-  if (document.getElementById('hero-reveal-window')) {
-    initHero();
-  }
+  lenis = initSmoothScroll(handleScrollUpdate);
 
-  const scrollCue = document.getElementById('hero-scroll-cue');
-  const moreToolsSection = document.getElementById('more-tools');
-  if (scrollCue && moreToolsSection) {
-    scrollCue.addEventListener('click', () => {
-      if (lenis) {
-        lenis.scrollTo(moreToolsSection, { offset: -60, duration: 1.1 });
-      } else {
-        moreToolsSection.scrollIntoView({ behavior: 'smooth' });
+  // 頁面主內容區掛載函式（初次進站與每次 App-Shell 切換分頁後都會呼叫）
+  const hydrateCurrentPage = async () => {
+    const tasks = [];
+
+    if (document.getElementById('hero-reveal-window')) {
+      tasks.push(Promise.resolve(initHero()));
+    }
+
+    const scrollCue = document.getElementById('hero-scroll-cue');
+    const moreToolsSection = document.getElementById('more-tools');
+    if (scrollCue && moreToolsSection) {
+      scrollCue.addEventListener('click', () => {
+        if (lenis) {
+          lenis.scrollTo(moreToolsSection, { offset: -60, duration: 1.1 });
+        } else {
+          moreToolsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+
+    if (document.getElementById('bento-container')) {
+      tasks.push(renderBentoGrid());
+    }
+
+    if (document.getElementById('announcements-container')) {
+      tasks.push(Promise.resolve(renderChangelog()));
+    }
+
+    if (document.getElementById('feedback-form')) {
+      initFeedbackForm();
+    }
+
+    // 等待本頁所有非同步 JSON 與 DOM 渲染完畢
+    if (tasks.length > 0) {
+      await Promise.all(tasks);
+    }
+
+    // 針對新注入的主內容重新綁定逐字標題揭露與磁吸按鈕
+    const mainEl = document.querySelector('body > main');
+    if (mainEl) {
+      initKineticTitles(mainEl);
+      initMagneticButtons(mainEl);
+    }
+    const bentoEl = document.getElementById('bento-container');
+    if (bentoEl) {
+      initKineticTitles(bentoEl);
+      initMagneticButtons(bentoEl);
+    }
+
+    // 若有物理彈珠收藏盒區塊則動態載入
+    if (document.getElementById('physics-toybox-section')) {
+      try {
+        const { initPhysicsToybox } = await import('./modules/physicsToybox.js');
+        await initPhysicsToybox();
+      } catch (err) {
+        console.warn('physicsToybox.js 載入略過：', err.message);
       }
-    });
-  }
+    }
 
-  if (document.getElementById('bento-container')) {
-    await renderBentoGrid();
-    initKineticTitles(document.getElementById('bento-container'));
     if (lenis) lenis.resize();
     handleScrollUpdate(window.scrollY);
-  }
+  };
 
-  // 安全動態載入空間物理「重力彈珠工具收藏盒」
-  if (document.getElementById('physics-toybox-section')) {
-    try {
-      const { initPhysicsToybox } = await import('./modules/physicsToybox.js');
-      await initPhysicsToybox();
-      if (lenis) lenis.resize();
-    } catch (err) {
-      console.warn('physicsToybox.js 尚未建立或載入失敗，已自動跳過：', err.message);
-    }
-  }
+  setPageHydrateHandler(hydrateCurrentPage);
+  initPageTransition();
+
+  // 初始化全域磁吸按鈕與當前頁面內容
+  initMagneticButtons();
+  await hydrateCurrentPage();
 
   const yearSpan = document.getElementById('footer-year');
   if (yearSpan) {
@@ -256,14 +270,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `);
     });
-  }
-
-  if (document.getElementById('announcements-container')) {
-    renderChangelog();
-    if (lenis) lenis.resize();
-  }
-
-  if (document.getElementById('feedback-form')) {
-    initFeedbackForm();
   }
 });

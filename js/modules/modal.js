@@ -1,10 +1,56 @@
 /**
- * Modal Module (彈窗控制模組 - 支援 View Transitions API 共享元素空間形變與背景景深縮放)
+ * Modal Module (彈窗控制模組 - 支援全卡片多層次 View Transitions 共享元素空間形變)
  */
 import { initMagneticButtons } from './microInteractions.js';
 
 let activeSourceElement = null;
 let isTransitioning = false;
+
+/**
+ * 依據傳入的來源元素（整張 .bento-card 或單純的 Hero 預覽框）綁定或清除對應的 viewTransitionName
+ */
+function applySourceTransitionNames(sourceEl, enable) {
+  if (!sourceEl) return;
+
+  const isFullCard = sourceEl.classList.contains('bento-card');
+  if (isFullCard) {
+    sourceEl.style.viewTransitionName = enable ? 'active-tool-card' : '';
+    const preview = sourceEl.querySelector('.preview-wrapper');
+    const title = sourceEl.querySelector('.card-title');
+    const platforms = sourceEl.querySelector('.platform-icons');
+
+    if (preview) preview.style.viewTransitionName = enable ? 'active-tool-preview' : '';
+    if (title) title.style.viewTransitionName = enable ? 'active-tool-title' : '';
+    if (platforms) platforms.style.viewTransitionName = enable ? 'active-tool-platforms' : '';
+  } else {
+    sourceEl.style.viewTransitionName = enable ? 'active-tool-preview' : '';
+  }
+}
+
+/**
+ * 綁定或清除目標 Modal 內對應層級的 viewTransitionName
+ */
+function applyModalTransitionNames(modal, hasFullCardSource, enable) {
+  if (!modal) return;
+
+  const modalCard = modal.querySelector('.modal-card');
+  const modalPreview = modal.querySelector('.modal-preview');
+  const modalTitle = modal.querySelector('.modal-title');
+  const modalPlatforms = modal.querySelector('.modal-platforms');
+
+  if (modalCard) {
+    modalCard.style.viewTransitionName = enable && hasFullCardSource ? 'active-tool-card' : '';
+  }
+  if (modalPreview) {
+    modalPreview.style.viewTransitionName = enable ? 'active-tool-preview' : '';
+  }
+  if (modalTitle) {
+    modalTitle.style.viewTransitionName = enable && hasFullCardSource ? 'active-tool-title' : '';
+  }
+  if (modalPlatforms) {
+    modalPlatforms.style.viewTransitionName = enable && hasFullCardSource ? 'active-tool-platforms' : '';
+  }
+}
 
 export function initModal() {
   const modal = document.getElementById('tool-modal');
@@ -16,14 +62,12 @@ export function initModal() {
     modalClose.addEventListener('click', closeModal);
   }
 
-  // 點擊背景遮罩關閉
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeModal();
     }
   });
 
-  // 按下 Esc 鍵關閉
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
       closeModal();
@@ -42,18 +86,18 @@ export function closeModal() {
     document.body.contains(activeSourceElement) &&
     modalPreview;
 
-  // 若具備來源縮圖元素且瀏覽器支援 View Transitions API，執行反向飛回原位動畫
   if (canUseViewTransition) {
     isTransitioning = true;
     const sourceEl = activeSourceElement;
+    const isFullCard = sourceEl.classList.contains('bento-card');
     activeSourceElement = null;
 
     document.documentElement.classList.add('is-vt-morphing');
-    modalPreview.style.viewTransitionName = 'active-tool-preview';
+    applyModalTransitionNames(modal, isFullCard, true);
 
     const transition = document.startViewTransition(() => {
-      modalPreview.style.viewTransitionName = '';
-      sourceEl.style.viewTransitionName = 'active-tool-preview';
+      applyModalTransitionNames(modal, isFullCard, false);
+      applySourceTransitionNames(sourceEl, true);
 
       modal.classList.remove('active');
       document.body.classList.remove('modal-open');
@@ -61,14 +105,13 @@ export function closeModal() {
     });
 
     transition.finished.finally(() => {
-      sourceEl.style.viewTransitionName = '';
+      applySourceTransitionNames(sourceEl, false);
       document.documentElement.classList.remove('is-vt-morphing');
       isTransitioning = false;
     });
     return;
   }
 
-  // 標準關閉動畫（無來源元素或舊版瀏覽器備援）
   activeSourceElement = null;
   modal.classList.remove('active');
   document.body.classList.remove('modal-open');
@@ -78,9 +121,6 @@ export function closeModal() {
   }, 240);
 }
 
-/**
- * 通用自訂內容開啟函式（供「關於我」等非工具類彈窗共用景深特效）
- */
 export function openCustomModal(htmlContent, sourceElement = null) {
   const modal = document.getElementById('tool-modal');
   const modalBody = document.getElementById('modal-body');
@@ -98,18 +138,16 @@ export function openCustomModal(htmlContent, sourceElement = null) {
   if (canUseViewTransition) {
     isTransitioning = true;
     activeSourceElement = sourceElement;
+    const isFullCard = sourceElement.classList.contains('bento-card');
 
     document.documentElement.classList.add('is-vt-morphing');
-    sourceElement.style.viewTransitionName = 'active-tool-preview';
+    applySourceTransitionNames(sourceElement, true);
 
     const transition = document.startViewTransition(() => {
-      sourceElement.style.viewTransitionName = '';
+      applySourceTransitionNames(sourceElement, false);
 
       modalBody.innerHTML = htmlContent;
-      const newPreview = modalBody.querySelector('.modal-preview');
-      if (newPreview) {
-        newPreview.style.viewTransitionName = 'active-tool-preview';
-      }
+      applyModalTransitionNames(modal, isFullCard, true);
 
       modal.style.display = 'flex';
       modal.classList.add('active');
@@ -118,17 +156,13 @@ export function openCustomModal(htmlContent, sourceElement = null) {
     });
 
     transition.finished.finally(() => {
-      const newPreview = modalBody.querySelector('.modal-preview');
-      if (newPreview) {
-        newPreview.style.viewTransitionName = '';
-      }
+      applyModalTransitionNames(modal, isFullCard, false);
       document.documentElement.classList.remove('is-vt-morphing');
       isTransitioning = false;
     });
     return;
   }
 
-  // 標準開啟動畫（例如從 Ctrl+K 面板或頁尾「關於本站」開啟）
   activeSourceElement = null;
   modalBody.innerHTML = htmlContent;
   modal.style.display = 'flex';
@@ -142,9 +176,7 @@ export function openCustomModal(htmlContent, sourceElement = null) {
 }
 
 /**
- * 開啟工具詳情彈窗
- * @param {Object} tool - 工具資料物件
- * @param {HTMLElement|null} sourceElement - 觸發點擊的來源預覽圖框元素（用於共享元素空間形變）
+ * 開啟工具詳情彈窗（同步渲染工具類型標籤與載具平台標籤）
  */
 export function openModal(tool, sourceElement = null) {
   let buttonHtml = `<a href="${tool.url || '#'}" target="_blank" class="modal-action-btn">立即開啟工具 ➔</a>`;
@@ -153,6 +185,14 @@ export function openModal(tool, sourceElement = null) {
   } else if (tool.status === 'coming_soon') {
     buttonHtml = `<button class="modal-action-btn disabled" disabled type="button">工具開發中，即將推出</button>`;
   }
+
+  const categoryBadgesHtml = (tool.categories || [])
+    .map(c => `<span class="modal-category-badge">${c}</span>`)
+    .join('');
+
+  const platformBadgesHtml = (tool.platforms || [])
+    .map(p => `<span class="modal-platform-badge">${p}</span>`)
+    .join('');
 
   const contentHtml = `
     ${tool.preview ? `
@@ -169,7 +209,8 @@ export function openModal(tool, sourceElement = null) {
       <h2 class="modal-title">${tool.title}</h2>
       
       <div class="modal-platforms">
-        ${(tool.platforms || []).map(p => `<span class="modal-platform-badge">${p}</span>`).join('')}
+        ${categoryBadgesHtml}
+        ${platformBadgesHtml}
       </div>
 
       <p class="modal-description">${tool.description || '暫無詳細說明。'}</p>

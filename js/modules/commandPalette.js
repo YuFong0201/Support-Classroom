@@ -1,8 +1,9 @@
 /**
  * 全站快捷指令搜尋面板模組 (Command Palette: Ctrl+K / Cmd+K)
- * 支援即時搜尋 tools.json 教學工具、鍵盤上下鍵導覽、快速開啟工具彈窗與站內頁面跳轉
+ * 支援即時搜尋 tools.json 教學工具、鍵盤上下鍵導覽、快速開啟工具彈窗與站內無刷新空間轉場
  */
 import { openModal, openCustomModal } from './modal.js';
+import { navigateWithSpatialTransition } from './pageTransition.js';
 
 let cachedTools = null;
 let isPaletteOpen = false;
@@ -23,12 +24,10 @@ async function getToolsData() {
 }
 
 export function initCommandPalette() {
-  if (document.getElementById('cmd-palette-overlay')) return;
-
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
   const shortcutLabel = isMac ? '⌘K' : 'Ctrl K';
 
-  // 1. 在導覽列自動植入極簡搜尋觸發按鈕（全站 3 頁同步生效）
+  // 1. 在導覽列植入極簡搜尋觸發膠囊
   const navLinks = document.getElementById('nav-links');
   if (navLinks && !document.getElementById('nav-cmd-trigger')) {
     const li = document.createElement('li');
@@ -49,6 +48,8 @@ export function initCommandPalette() {
       openCommandPalette();
     });
   }
+
+  if (document.getElementById('cmd-palette-overlay')) return;
 
   // 2. 建立快捷指令面板 DOM
   const overlay = document.createElement('div');
@@ -86,7 +87,6 @@ export function initCommandPalette() {
   const resultsList = document.getElementById('cmd-results-list');
   const escBtn = document.getElementById('cmd-esc-btn');
 
-  // 渲染搜尋結果清單
   const renderResults = async (query = '') => {
     const tools = await getToolsData();
     const q = query.trim().toLowerCase();
@@ -98,7 +98,7 @@ export function initCommandPalette() {
         title: '前往首頁',
         subtitle: '瀏覽最新工具與全系列教學資源',
         badge: '頁面',
-        action: () => { window.location.href = 'index.html'; }
+        action: () => navigateWithSpatialTransition('index.html')
       },
       {
         type: 'nav',
@@ -106,7 +106,7 @@ export function initCommandPalette() {
         title: '查看更新日誌',
         subtitle: '檢視網站最新公告與各工具版本歷程',
         badge: '頁面',
-        action: () => { window.location.href = 'changelog.html'; }
+        action: () => navigateWithSpatialTransition('changelog.html')
       },
       {
         type: 'nav',
@@ -114,7 +114,7 @@ export function initCommandPalette() {
         title: '填寫意見回饋 / 新工具許願',
         subtitle: '向奇老師提出功能建議或問題回報',
         badge: '頁面',
-        action: () => { window.location.href = 'feedback.html'; }
+        action: () => navigateWithSpatialTransition('feedback.html')
       },
       {
         type: 'about',
@@ -139,6 +139,7 @@ export function initCommandPalette() {
         const haystack = [
           t.title,
           t.description,
+          ...(t.categories || []),
           ...(t.platforms || []),
           ...(t.features || [])
         ]
@@ -159,7 +160,7 @@ export function initCommandPalette() {
 
     const matchedNavs = quickNavItems.filter((item) => {
       if (!q) return true;
-      return `${item.title} ${item.subtitle}`.toLowerCase().includes(q);
+      return `${item.title}${item.subtitle}`.toLowerCase().includes(q);
     });
 
     currentResults = [...matchedTools, ...matchedNavs];
@@ -193,8 +194,7 @@ export function initCommandPalette() {
             ${item.thumb ? `<img src="${item.thumb}" alt="" class="cmd-item-thumb" />` : '<div class="cmd-item-icon">🧰</div>'}
             <div class="cmd-item-info">
               <div class="cmd-item-title-row">
-                <span class="cmd-item-title">${escapeHtml(item.title)}</span>
-                ${statusTag}
+                <span class="cmd-item-title">${escapeHtml(item.title)}</span>${statusTag}
               </div>
               <div class="cmd-item-sub">${escapeHtml(item.subtitle)}</div>
             </div>
@@ -229,7 +229,6 @@ export function initCommandPalette() {
 
     resultsList.innerHTML = html;
 
-    // 綁定滑鼠移入與點擊事件
     resultsList.querySelectorAll('.cmd-item').forEach((el) => {
       const idx = Number(el.dataset.cmdIdx);
       el.addEventListener('mouseenter', () => {
@@ -260,7 +259,7 @@ export function initCommandPalette() {
     closeCommandPalette();
     setTimeout(() => {
       target.action();
-    }, 120);
+    }, 100);
   };
 
   function openCommandPalette() {
@@ -287,12 +286,10 @@ export function initCommandPalette() {
     }, 200);
   }
 
-  // 輸入即時過濾
   input.addEventListener('input', (e) => {
     renderResults(e.target.value);
   });
 
-  // 面板內鍵盤上下鍵與 Enter 操作
   input.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -320,7 +317,6 @@ export function initCommandPalette() {
     if (e.target === overlay) closeCommandPalette();
   });
 
-  // 全域快捷鍵 Ctrl + K / Cmd + K
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
@@ -334,7 +330,7 @@ export function initCommandPalette() {
 }
 
 function escapeHtml(str) {
-  return String(str)
+  return String(str ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
