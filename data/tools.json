@@ -1,4 +1,28 @@
 [
+    {
+    "id": "Qi-class-pet",
+    "title": "奇老師的電子班寵",
+    "featured": true,
+    "status": "active",
+    "version": "V2.1.0",
+    "updatedAt": "2026-11-18",
+    "description": "現已上架 Microsoft Store",
+    "categories": ["教學工具", "遊戲"],
+    "platforms": ["電子白板","電腦"],
+    "preview": {
+      "image": "assets/images/previews/Qi-class-pet.png",
+      "video": "assets/videos/previews/qi-class-pet-promo.mp4"
+    },
+    "type": "external",
+    "msStoreId": "9p9m5hmfr2kc",
+    "url": "https://apps.microsoft.com/detail/9P9M5HMFR2KC",
+    "features": [
+      "為教學所設計，低電腦效能占用，不影響教師操作其他教學軟體，效能孱弱的電腦也能使用",
+      "包含加分板、電子白板常用功能、療癒卻又能不造成學生分心的桌面寵物",
+      "雙層次加分系統獨特設計，有效提高對學生對加分的渴望",
+      "未來將持續添加更多實用功能，也開放教師許願"
+    ]
+  },
   {
     "id": "Unlimited-Math-Problem-Bank",
     "title": "國小數學無限題庫",
@@ -71,7 +95,7 @@
   {
     "id": "isekai-everyday",
     "title": "故事接龍卡牌遊戲",
-    "featured": true,
+    "featured": false,
     "status": "active",
     "version": "V1.5.0",
     "updatedAt": "2026-11-12",
@@ -122,7 +146,7 @@
     "version": "V0.6.0 (beta)",
     "updatedAt": "2026-11-18",
     "description": "Q-doc",
-    "categories": ["國語", "備課工具"],
+    "categories": ["國語", "數學", "備課工具"],
     "platforms": ["電腦"],
     "preview": {
       "image": "assets/images/previews/Q-doc.png",
